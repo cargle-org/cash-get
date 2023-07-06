@@ -1,2 +1,0 @@
-# cash-get
-Cash Get 
