@@ -1,7 +1,7 @@
 import { Flex, Pressable, Text } from "@react-native-material/core";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { nairaCurrencyFormatter } from "../../../../../../utils/misc";
+import { nairaCurrencyFormatter } from "../../../../../utils/misc";
 
 const SingleOrder = ({ amount, status, agentName, agentId, agentNo, onPress }: any) => {
   return (

@@ -2,16 +2,14 @@ import { AppBar, Box, Button, Flex, Icon, Text, TextInput } from "@react-native-
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
-import { DashboardShopOrdersRootList } from "../../root";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { orderApi } from "../../../../../../services/order.service";
-import { nairaCurrencyFormatter } from "../../../../../../utils/misc";
-import { IUser } from "../../../../../../services/types";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../../../store/appSlice";
 import { AxiosError } from "axios";
+import { DashboardAgentRootList } from "../../root";
+import { orderApi } from "../../../../../services/order.service";
+import { IUser } from "../../../../../services/types";
+import { nairaCurrencyFormatter } from "../../../../../utils/misc";
 
-const ViewSingleOrder = (props: NativeStackScreenProps<DashboardShopOrdersRootList>) => {
+const ViewSingleOrder = (props: NativeStackScreenProps<DashboardAgentRootList>) => {
   const { route } = props;
   const [agentKey, setAgentKey] = useState("");
   const queryClient = useQueryClient();

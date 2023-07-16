@@ -4,8 +4,28 @@ import React from "react";
 import { SafeAreaView, TextInput as DefaultTextInput, View, ScrollView, StatusBar } from "react-native";
 import { createOrderValidationSchema } from "./validation";
 import { isObjectEmpty } from "../../../../utils/misc";
+import DashboardAppBar from "../../components/DashboardAppBar";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useMutation } from "react-query";
+import { orderApi } from "../../../../services/order.service";
+import { AxiosError } from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../store/appSlice";
 
-const CreateOrder = () => {
+type CreateOrderProps = NativeStackScreenProps<any>;
+
+const CreateOrder = (props: CreateOrderProps) => {
+  const { navigation } = props;
+  const shop = useSelector((state: RootState) => state.auth.user);
+  const mutation = useMutation({
+    mutationFn: orderApi.createOrder,
+    onSuccess: ({ data, message, status }) => {
+      createOrderFormik.setSubmitting(false);
+    },
+    onError: (error: AxiosError) => {
+      createOrderFormik.setSubmitting(false);
+    },
+  });
   const createOrderFormik = useFormik({
     validationSchema: createOrderValidationSchema,
     initialValues: {
@@ -16,12 +36,12 @@ const CreateOrder = () => {
       extraInfo: "",
     },
     onSubmit: (values) => {
-      console.log(values);
+      mutation.mutate({ shopId: shop?.id || "", body: { ...values, amount: parseFloat(values.amount) } });
     },
   });
   return (
     <SafeAreaView style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
-      <AppBar title="Create Order" />
+      <DashboardAppBar navigate={navigation} title="Create Order" />
       <ScrollView
         style={{ backgroundColor: "#ffffff", padding: 32 }}
         contentContainerStyle={{

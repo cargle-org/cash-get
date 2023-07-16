@@ -3,6 +3,10 @@ import React from "react";
 import Orders from ".";
 import ViewSingleOrder from "./components/view-order";
 
+export type DashboardShopOrdersRootList = {
+  "shop-orders-all": undefined;
+  "shop-orders-single": { orderId: string };
+};
 const ShopOrdersRoot = () => {
   const ShopOrdersStack = createNativeStackNavigator();
   return (

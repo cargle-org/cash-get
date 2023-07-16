@@ -1,18 +1,19 @@
 import { AppBar, Text } from "@react-native-material/core";
 import React from "react";
 import { FlatList, SafeAreaView, ScrollView, StatusBar, View } from "react-native";
-import SingleOrder from "./components/single-order";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../store/appSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { DashboardShopOrdersRootList } from "./root";
 import { IOrderListItem } from "../../../../services/types";
+import { DashboardAgentRootList } from "../root";
+import SingleOrder from "../components/single-order";
+import { OpenOrdersRootList } from "./root";
 
-const Orders = ({ navigation }: NativeStackScreenProps<DashboardShopOrdersRootList>) => {
+const AgentOpenOrders = ({ navigation }: NativeStackScreenProps<OpenOrdersRootList>) => {
   const orders = useSelector((state: RootState) => state.order.orders);
   const handlePress = (item: IOrderListItem) => {
     // Handle press event for a list item
-    navigation.navigate("shop-orders-single", { orderId: item.id });
+    navigation.navigate("agent-open-orders-single", { orderId: item.id });
   };
   return (
     <SafeAreaView style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
@@ -40,4 +41,4 @@ const Orders = ({ navigation }: NativeStackScreenProps<DashboardShopOrdersRootLi
   );
 };
 
-export default Orders;
+export default AgentOpenOrders;

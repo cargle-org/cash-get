@@ -1,13 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import CreateOrder from "./shop/create-order";
+import CreateOrder from "./create-order";
 import { Icon } from "@react-native-material/core";
-import ShopOrdersRoot from "./shop/orders/root";
+import ShopOrdersRoot from "./orders/root";
+import { firebaseService } from "../../../services/firebase.service";
 
-const DashboardRoot = () => {
-  const DashboardNavigator = createMaterialBottomTabNavigator();
+type DashboardShopRootList = {
+  "shop-create-order": undefined;
+  "shop-view-orders": undefined;
+};
+
+const DashboardShopRoot = () => {
+  const DashboardNavigator = createMaterialBottomTabNavigator<DashboardShopRootList>();
+  useEffect(() => {
+    const removeListener = firebaseService.listenForOrders();
+    return () => {
+      removeListener();
+    };
+  }, []);
   return (
-    <DashboardNavigator.Navigator initialRouteName="Home">
+    <DashboardNavigator.Navigator>
       <DashboardNavigator.Group>
         <DashboardNavigator.Screen
           name="shop-create-order"
@@ -30,4 +42,4 @@ const DashboardRoot = () => {
   );
 };
 
-export default DashboardRoot;
+export default DashboardShopRoot;

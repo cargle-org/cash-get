@@ -4,14 +4,29 @@ import { Button, Text, TextInput } from "@react-native-material/core";
 import { Flex } from "react-native-flex-layout";
 import Lottie from "lottie-react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store/appSlice";
+import { isAuthenticated } from "../../../utils/misc";
+import { UserEnum } from "../../../services/types";
 
 type ProfileProps = NativeStackScreenProps<any>;
 
 const LandingPage = (props: ProfileProps) => {
   const { navigation } = props;
+  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+  const user = useSelector((state: RootState) => state.auth.user);
+
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate("auth", { screen: "login" });
+      if (isAuthenticated(accessToken)) {
+        if (user?.role === UserEnum.AGENT) {
+          navigation.navigate("dashboard-agent");
+        } else {
+          navigation.navigate("dashboard-shop");
+        }
+      } else {
+        navigation.navigate("auth", { screen: "login" });
+      }
     }, 5000);
   }, []);
   return (
