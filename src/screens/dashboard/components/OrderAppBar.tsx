@@ -7,38 +7,36 @@ import { theme } from "../../../utils/theme";
 import { Icon } from "@react-native-material/core";
 import { RootState } from "../../../store/appSlice";
 
-interface IDashboardAppBar {
-  title?: string;
+interface IOrderAppBar {
+  orderId?: string;
   navigate: NativeStackNavigationProp<any>;
 }
 
-const DashboardAppBar: React.FC<IDashboardAppBar> = (props) => {
+const OrderAppBar: React.FC<IOrderAppBar> = (props) => {
   const { navigate } = props;
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
 
-  const onClickLogout = () => {
+  const onClickClose = () => {
     dispatch(logout());
-    navigate.navigate("auth");
+    navigate.goBack();
   };
   return (
     <AppBar
-      title={user?.name}
+      title={`Order ID: ${user?.name}`}
       titleStyle={{
         textTransform: "capitalize",
       }}
       color={theme.colors["white"]}
-      tintColor={theme.colors["dark-500"]}
+      tintColor={theme.colors["dark-200"]}
       style={{
-        paddingTop: 40,
         paddingHorizontal: 8,
       }}
       trailing={(appBarProps) => (
-        <IconButton onPress={() => onClickLogout()} icon={() => <Icon color={theme.colors["dark-500"]} name="logout" size={26} />} />
+        <IconButton onPress={() => onClickClose()} icon={<Icon color={theme.colors["dark-200"]} name="close" size={26} />} />
       )}
-      leading={(appBarProps) => <Icon color={theme.colors["dark-500"]} name="store" size={26} />}
     />
   );
 };
 
-export default DashboardAppBar;
+export default OrderAppBar;

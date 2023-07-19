@@ -3,13 +3,13 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AgentOpenOrders from ".";
 import AgentViewSingleOrder from "../components/view-order";
 
-export type ActiveOrdersRootList = {
+export type OpenOrdersRootList = {
   "agent-open-orders-all": undefined;
   "agent-open-orders-single": { orderId: string };
 };
 
 const AgentActiveOrdersRoot = () => {
-  const ActiveOrdersStack = createNativeStackNavigator<ActiveOrdersRootList>();
+  const ActiveOrdersStack = createNativeStackNavigator<OpenOrdersRootList>();
   return (
     <ActiveOrdersStack.Navigator>
       <ActiveOrdersStack.Screen

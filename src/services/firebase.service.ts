@@ -32,16 +32,11 @@ const db = firebase.database();
 
 const listenForOrders = () => {
   const orderRef = db.ref("order");
-
-  const listener = orderRef.once("value").then((snapshot) => {
-    console.log(snapshot);
-  });
-  orderRef.on("value", (snapshot) => {
+  const listener = orderRef.on("value", (snapshot) => {
     const allOrders: any[] = [];
     snapshot.forEach((childSnapshot) => {
       allOrders.push(childSnapshot.val());
     });
-    console.log({ allOrders });
     store.dispatch(getOrders(allOrders));
   });
   return () => {

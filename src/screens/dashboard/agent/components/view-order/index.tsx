@@ -17,7 +17,6 @@ const ViewSingleOrder = (props: NativeStackScreenProps<DashboardAgentRootList>) 
   const mutation = useMutation({
     mutationFn: orderApi.confirmAgentKey,
     onSuccess: ({ message, status, data }) => {
-      console.log({ message });
       queryClient.invalidateQueries(orderId);
     },
     onError: (error: AxiosError) => {

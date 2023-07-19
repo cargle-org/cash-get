@@ -1,7 +1,7 @@
 import { AppBar, Box, Button, Flex, Text, TextInput } from "@react-native-material/core";
 import { useFormik } from "formik";
 import React from "react";
-import { SafeAreaView, TextInput as DefaultTextInput, View, ScrollView, StatusBar } from "react-native";
+import { TextInput as DefaultTextInput, View, ScrollView } from "react-native";
 import { createOrderValidationSchema } from "./validation";
 import { isObjectEmpty } from "../../../../utils/misc";
 import DashboardAppBar from "../../components/DashboardAppBar";
@@ -11,6 +11,7 @@ import { orderApi } from "../../../../services/order.service";
 import { AxiosError } from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../store/appSlice";
+import { theme } from "../../../../utils/theme";
 
 type CreateOrderProps = NativeStackScreenProps<any>;
 
@@ -40,20 +41,26 @@ const CreateOrder = (props: CreateOrderProps) => {
     },
   });
   return (
-    <SafeAreaView style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
-      <DashboardAppBar navigate={navigation} title="Create Order" />
+    <View style={{ flex: 1 }}>
+      <DashboardAppBar navigate={navigation} />
       <ScrollView
-        style={{ backgroundColor: "#ffffff", padding: 32 }}
+        style={{ backgroundColor: theme.colors["dark-100"], paddingHorizontal: 16 }}
         contentContainerStyle={{
           display: "flex",
+          paddingVertical: 20,
           gap: 12,
         }}
       >
+        <Text variant="h4" color={theme.colors["dark-300"]} style={{ textAlign: "center" }}>
+          Create Order
+        </Text>
         <TextInput
           value={createOrderFormik.values.amount}
           variant="outlined"
           label="Enter Amount"
           keyboardType="numeric"
+          color={theme.colors["dark-500"]}
+          inputStyle={{ backgroundColor: theme.colors["dark-100"] }}
           onChangeText={createOrderFormik.handleChange("amount")}
           onBlur={createOrderFormik.handleBlur("amount")}
           helperText={createOrderFormik.errors.amount && createOrderFormik.touched.amount ? createOrderFormik.errors.amount : ""}
@@ -62,6 +69,8 @@ const CreateOrder = (props: CreateOrderProps) => {
           value={createOrderFormik.values.address}
           variant="outlined"
           label="Enter Address"
+          color={theme.colors["dark-500"]}
+          inputStyle={{ backgroundColor: theme.colors["dark-100"] }}
           onChangeText={createOrderFormik.handleChange("address")}
           onBlur={createOrderFormik.handleBlur("address")}
           helperText={createOrderFormik.errors.address && createOrderFormik.touched.address ? createOrderFormik.errors.address : ""}
@@ -70,6 +79,8 @@ const CreateOrder = (props: CreateOrderProps) => {
           value={createOrderFormik.values.contactName}
           variant="outlined"
           label="Enter Contact Name"
+          color={theme.colors["dark-500"]}
+          inputStyle={{ backgroundColor: theme.colors["dark-100"] }}
           onChangeText={createOrderFormik.handleChange("contactName")}
           onBlur={createOrderFormik.handleBlur("contactName")}
           helperText={createOrderFormik.errors.contactName && createOrderFormik.touched.contactName ? createOrderFormik.errors.contactName : ""}
@@ -78,6 +89,8 @@ const CreateOrder = (props: CreateOrderProps) => {
           value={createOrderFormik.values.contactNumber}
           variant="outlined"
           label="Enter Contact Number"
+          color={theme.colors["dark-500"]}
+          inputStyle={{ backgroundColor: theme.colors["dark-100"] }}
           onChangeText={createOrderFormik.handleChange("contactNumber")}
           onBlur={createOrderFormik.handleBlur("contactNumber")}
           helperText={createOrderFormik.errors.contactNumber && createOrderFormik.touched.contactNumber ? createOrderFormik.errors.contactNumber : ""}
@@ -89,7 +102,7 @@ const CreateOrder = (props: CreateOrderProps) => {
           numberOfLines={5}
           style={{
             height: 200,
-            borderColor: "#e2e8f0",
+            borderColor: theme.colors["dark-200"],
             borderWidth: 1,
             paddingTop: 16,
             padding: 16,
@@ -104,10 +117,11 @@ const CreateOrder = (props: CreateOrderProps) => {
           loading={createOrderFormik.isSubmitting}
           disabled={!isObjectEmpty(createOrderFormik.errors) || isObjectEmpty(createOrderFormik.touched)}
           title="Create Order"
-          style={{ marginTop: 12, paddingVertical: 8 }}
+          style={{ marginTop: 12, paddingVertical: 10 }}
+          color={theme.colors["dark-500"]}
         />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -1,12 +1,14 @@
 import { AppBar, Text } from "@react-native-material/core";
 import React from "react";
-import { FlatList, SafeAreaView, ScrollView, StatusBar, View } from "react-native";
+import { FlatList, StatusBar, View } from "react-native";
 import SingleOrder from "./components/single-order";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../store/appSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { DashboardShopOrdersRootList } from "./root";
 import { IOrderListItem } from "../../../../services/types";
+import DashboardAppBar from "../../components/DashboardAppBar";
+import { theme } from "../../../../utils/theme";
 
 const Orders = ({ navigation }: NativeStackScreenProps<DashboardShopOrdersRootList>) => {
   const orders = useSelector((state: RootState) => state.order.orders);
@@ -15,10 +17,10 @@ const Orders = ({ navigation }: NativeStackScreenProps<DashboardShopOrdersRootLi
     navigation.navigate("shop-orders-single", { orderId: item.id });
   };
   return (
-    <SafeAreaView style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
-      <AppBar title="List Order" />
+    <View style={{ flex: 1, paddingTop: StatusBar.currentHeight, backgroundColor: theme.colors["dark-100"] }}>
+      <DashboardAppBar navigate={navigation} />
       <FlatList
-        style={{ backgroundColor: "#ffffff", paddingVertical: 32, paddingHorizontal: 16 }}
+        style={{ paddingVertical: 32, paddingHorizontal: 16 }}
         contentContainerStyle={{
           display: "flex",
           gap: 12,
@@ -36,7 +38,7 @@ const Orders = ({ navigation }: NativeStackScreenProps<DashboardShopOrdersRootLi
         )}
         keyExtractor={(item) => item.id.toString()}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

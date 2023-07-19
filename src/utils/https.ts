@@ -12,7 +12,7 @@ class HttpFacade {
   constructor() {
     this.http = axios.create({
       baseURL: "",
-      headers: { "Content-Type": "application/json" },
+      headers: { "content-type": "application/json" },
     });
 
     this.http.interceptors.request.use(
