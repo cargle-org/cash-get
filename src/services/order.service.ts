@@ -1,8 +1,7 @@
 import https from "../utils/https";
 import { ICreateOrderPayload, ILoginPayLoad, ILoginResponse, IOrder, IResponse } from "./types";
-import { BASE_URL } from "@env";
 
-const ORDER_BASE_URL = `${BASE_URL}/order`;
+const ORDER_BASE_URL = `/order`;
 
 const createOrder = async (payload: { shopId: string; body: ICreateOrderPayload }): Promise<IResponse<IOrder>> =>
   https.post({

@@ -5,13 +5,13 @@ import QueryString from "query-string";
 import { IDelete, IGet, IPatch, IPost, IPut } from "./types";
 import { store } from "../store";
 import { RootState } from "../store/appSlice";
-
+import { BASE_URL } from "@env";
 class HttpFacade {
   private http;
 
   constructor() {
     this.http = axios.create({
-      baseURL: "",
+      baseURL: BASE_URL,
       headers: { "content-type": "application/json" },
     });
 
