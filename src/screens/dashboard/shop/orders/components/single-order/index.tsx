@@ -4,38 +4,43 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { nairaCurrencyFormatter } from "../../../../../../utils/misc";
 import { Divider } from "react-native-paper";
 import { theme } from "../../../../../../utils/theme";
+import moment from "moment";
 
-const SingleOrder = ({ amount, status, agentName, agentId, agentNo, onPress }: any) => {
+const SingleOrder = ({ orderId, amount, status, agentName, agentId, agentNo, onPress, time }: any) => {
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.orderSingleCardContainer}>
         <View style={styles.orderSingleCardheaderContainer}>
           <View style={statusStyle(status).statusContainer}>
-            <Text style={statusStyle(status).statusText}>Status</Text>
+            <Text style={statusStyle(status).statusText}>{status}</Text>
           </View>
           <View style={styles.orderSingleCardTimeContainer}>
-            <Text style={styles.orderSingleCardTimeText}>Time</Text>
+            <Text style={styles.orderSingleCardTimeText}>{moment(time).toNow(true)}</Text>
           </View>
         </View>
         <View style={styles.orderSingleCardBodyContainer}>
           <View style={styles.orderSingleCardShopSectionContainer}>
             <View style={styles.orderSingleCardShopSectionAvatarContainer}>
-              <Icon name="store" size={40} />
-              <Text style={styles.orderSingleCardShopSectionAvatarText}>Shop Name</Text>
+              <Icon name="cart" size={40} />
+              <Text style={styles.orderSingleCardShopSectionAvatarText}>{`#${orderId}`}</Text>
             </View>
-            <Text style={styles.orderSingleCardShopSectionAmount}>Amount</Text>
+            <Text style={styles.orderSingleCardShopSectionAmount}>{nairaCurrencyFormatter(amount)}</Text>
           </View>
-          <Divider />
-          <View style={styles.orderSingleCardAgentSectionContainer}>
-            <View style={styles.orderSingleCardAgentSectionItemContainer}>
-              <Text style={styles.orderSingleCardAgentSectionLabel}>Agent Name</Text>
-              <Text style={styles.orderSingleCardAgentSectionText}>Johnson Olaolu</Text>
-            </View>
-            <View style={styles.orderSingleCardAgentSectionItemContainer}>
-              <Text style={styles.orderSingleCardAgentSectionLabel}>Agent Name</Text>
-              <Text style={styles.orderSingleCardAgentSectionText}>Johnson Olaolu</Text>
-            </View>
-          </View>
+          {agentId && (
+            <>
+              <Divider />
+              <View style={styles.orderSingleCardAgentSectionContainer}>
+                <View style={styles.orderSingleCardAgentSectionItemContainer}>
+                  <Text style={styles.orderSingleCardAgentSectionLabel}>Agent Name</Text>
+                  <Text style={styles.orderSingleCardAgentSectionText}>{agentName}</Text>
+                </View>
+                <View style={styles.orderSingleCardAgentSectionItemContainer}>
+                  <Text style={styles.orderSingleCardAgentSectionLabel}>Agent Number</Text>
+                  <Text style={styles.orderSingleCardAgentSectionText}>{agentNo}</Text>
+                </View>
+              </View>
+            </>
+          )}
         </View>
       </View>
       <View></View>

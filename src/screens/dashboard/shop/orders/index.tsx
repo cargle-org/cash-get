@@ -28,8 +28,10 @@ const Orders = ({ navigation }: NativeStackScreenProps<DashboardShopOrdersRootLi
         data={orders}
         renderItem={({ item }) => (
           <SingleOrder
+            orderId={item.id}
             amount={item.amount}
             status={item.status}
+            time={item.deliveryPeriod}
             agentName={item.agentName}
             agentId={item.agentId}
             agentNo={item.agentNo}

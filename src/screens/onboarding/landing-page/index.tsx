@@ -27,7 +27,7 @@ const LandingPage = (props: ProfileProps) => {
       } else {
         navigation.navigate("auth", { screen: "login" });
       }
-    }, 5000);
+    }, 3000);
   }, []);
   return (
     <Flex fill={true} p={32} direction="column" justify="center" style={{ backgroundColor: "#ffffff" }}>

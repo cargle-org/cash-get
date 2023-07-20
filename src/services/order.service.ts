@@ -25,9 +25,15 @@ const confirmShopKey = async (payload: { orderId: string; agentKey: string }): P
     body: JSON.stringify({ key: payload.agentKey }),
   });
 
+const deleteOrder = async (payload: { orderId: string }): Promise<IResponse<null>> =>
+  https.delete({
+    url: `${ORDER_BASE_URL}/${payload.orderId}`,
+  });
+
 export const orderApi = {
   createOrder,
   getSingleOrder,
   confirmAgentKey,
   confirmShopKey,
+  deleteOrder,
 };

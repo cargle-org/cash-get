@@ -50,6 +50,7 @@ export interface IOrder {
   agentConfirmed: boolean;
   agentKey: string;
   shopConfirmed: boolean;
+  deliveryPeriod: Date;
   shopKey: string;
   status: orderStatusEnum;
   createdAt: Date;
@@ -71,4 +72,5 @@ export interface IOrderListItem {
   agentName: string;
   agentId: string;
   agentNo: string;
+  deliveryPeriod: string;
 }

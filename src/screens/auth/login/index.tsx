@@ -31,7 +31,7 @@ const Login = (props: LoginProps) => {
     },
     onSubmit: (values) => {
       // navigation.navigate("dashboard-shop");
-      mutation.mutate({ ...values, role: isAgent ? UserEnum.AGENT : UserEnum.SHOP });
+      mutation.mutate({ ...values, email: values.email.toLowerCase(), role: isAgent ? UserEnum.AGENT : UserEnum.SHOP });
     },
   });
 

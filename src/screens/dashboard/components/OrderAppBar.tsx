@@ -13,7 +13,7 @@ interface IOrderAppBar {
 }
 
 const OrderAppBar: React.FC<IOrderAppBar> = (props) => {
-  const { navigate } = props;
+  const { navigate, orderId } = props;
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
 
@@ -23,7 +23,7 @@ const OrderAppBar: React.FC<IOrderAppBar> = (props) => {
   };
   return (
     <AppBar
-      title={`Order ID: ${user?.name}`}
+      title={`Order ID: ${orderId}`}
       titleStyle={{
         textTransform: "capitalize",
       }}
