@@ -6,6 +6,8 @@ import ShopOrdersRoot from "./orders/root";
 import { firebaseService } from "../../../services/firebase.service";
 import { theme } from "../../../utils/theme";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store/appSlice";
 
 type DashboardShopRootList = {
   "shop-create-order": undefined;
@@ -14,8 +16,9 @@ type DashboardShopRootList = {
 
 const DashboardShopRoot = () => {
   const DashboardNavigator = createBottomTabNavigator<DashboardShopRootList>();
+  const user = useSelector((state: RootState) => state.auth.user);
   useEffect(() => {
-    const removeListener = firebaseService.listenForOrders();
+    const removeListener = firebaseService.listenForOrders(user!.id, user!.role);
     return () => {
       removeListener();
     };

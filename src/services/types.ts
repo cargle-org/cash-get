@@ -70,6 +70,7 @@ export interface IOrderListItem {
   amount: string;
   status: orderStatusEnum;
   agentName: string;
+  shopId: string;
   agentId: string;
   agentNo: string;
   deliveryPeriod: string;

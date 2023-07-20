@@ -9,7 +9,7 @@ import { RootState } from "../../../store/appSlice";
 
 interface IDashboardAppBar {
   title?: string;
-  navigate: NativeStackNavigationProp<any>;
+  navigate: any;
 }
 
 const DashboardAppBar: React.FC<IDashboardAppBar> = (props) => {

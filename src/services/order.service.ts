@@ -13,6 +13,12 @@ const getSingleOrder = async (payload: string): Promise<IResponse<IOrder>> =>
     url: `${ORDER_BASE_URL}/${payload}`,
   });
 
+const acceptOrder = async (payload: { orderId: string; agentId: string }): Promise<IResponse<IOrder>> =>
+  https.get({
+    url: `${ORDER_BASE_URL}/${payload.orderId}/acceptOrder`,
+    body: JSON.stringify({ agentId: payload.agentId }),
+  });
+
 const confirmAgentKey = async (payload: { orderId: string; agentKey: string }): Promise<IResponse<IOrder>> =>
   https.post({
     url: `${ORDER_BASE_URL}/${payload.orderId}/confirmAgent`,
@@ -31,6 +37,7 @@ const deleteOrder = async (payload: { orderId: string }): Promise<IResponse<null
   });
 
 export const orderApi = {
+  acceptOrder,
   createOrder,
   getSingleOrder,
   confirmAgentKey,

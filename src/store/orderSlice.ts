@@ -4,11 +4,15 @@ import { IOrderListItem, orderStatusEnum } from "../services/types";
 export const orderSlice = createSlice({
   name: "orders",
   initialState: {
-    orders: [],
-  } as { orders: IOrderListItem[] },
+    openOrders: [],
+    closedOrders: [],
+    activeOrders: [],
+  } as { openOrders: IOrderListItem[]; closedOrders: IOrderListItem[]; activeOrders: IOrderListItem[] },
   reducers: {
-    getOrders: (state, payload: PayloadAction<IOrderListItem[]>) => {
-      state.orders = payload.payload;
+    getOrders: (state, payload: PayloadAction<{ openOrders: IOrderListItem[]; closedOrders: IOrderListItem[]; activeOrders: IOrderListItem[] }>) => {
+      state.activeOrders = payload.payload.activeOrders;
+      state.closedOrders = payload.payload.closedOrders;
+      state.openOrders = payload.payload.openOrders;
     },
   },
 });

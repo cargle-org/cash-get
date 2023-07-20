@@ -15,10 +15,8 @@ interface IOrderAppBar {
 const OrderAppBar: React.FC<IOrderAppBar> = (props) => {
   const { navigate, orderId } = props;
   const user = useSelector((state: RootState) => state.auth.user);
-  const dispatch = useDispatch();
 
   const onClickClose = () => {
-    dispatch(logout());
     navigate.goBack();
   };
   return (

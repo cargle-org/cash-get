@@ -11,7 +11,7 @@ import DashboardAppBar from "../../components/DashboardAppBar";
 import { theme } from "../../../../utils/theme";
 
 const Orders = ({ navigation }: NativeStackScreenProps<DashboardShopOrdersRootList>) => {
-  const orders = useSelector((state: RootState) => state.order.orders);
+  const orders = useSelector((state: RootState) => state.order.openOrders);
   const handlePress = (item: IOrderListItem) => {
     // Handle press event for a list item
     navigation.navigate("shop-orders-single", { orderId: item.id });

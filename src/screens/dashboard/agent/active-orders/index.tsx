@@ -8,16 +8,17 @@ import { IOrderListItem } from "../../../../services/types";
 import { DashboardAgentRootList } from "../root";
 import SingleOrder from "../components/single-order";
 import { ActiveOrdersRootList } from "./root";
+import DashboardAppBar from "../../components/DashboardAppBar";
 
 const AgentActiveOrders = ({ navigation }: NativeStackScreenProps<ActiveOrdersRootList>) => {
-  const orders = useSelector((state: RootState) => state.order.orders);
+  const orders = useSelector((state: RootState) => state.order.activeOrders);
   const handlePress = (item: IOrderListItem) => {
     // Handle press event for a list item
     navigation.navigate("agent-active-orders-single", { orderId: item.id });
   };
   return (
-    <SafeAreaView style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
-      <AppBar title="List Order" />
+    <View style={{ flex: 1 }}>
+      <DashboardAppBar navigate={navigation} />
       <FlatList
         style={{ backgroundColor: "#ffffff", paddingVertical: 32, paddingHorizontal: 16 }}
         contentContainerStyle={{
@@ -27,6 +28,8 @@ const AgentActiveOrders = ({ navigation }: NativeStackScreenProps<ActiveOrdersRo
         data={orders}
         renderItem={({ item }) => (
           <SingleOrder
+            time={item.deliveryPeriod}
+            orderId={item.id}
             amount={item.amount}
             status={item.status}
             agentName={item.agentName}
@@ -37,7 +40,7 @@ const AgentActiveOrders = ({ navigation }: NativeStackScreenProps<ActiveOrdersRo
         )}
         keyExtractor={(item) => item.id.toString()}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

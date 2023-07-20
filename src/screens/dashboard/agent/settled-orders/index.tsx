@@ -8,16 +8,17 @@ import { IOrderListItem } from "../../../../services/types";
 import { DashboardAgentRootList } from "../root";
 import SingleOrder from "../components/single-order";
 import { SettledOrdersRootList } from "./root";
+import DashboardAppBar from "../../components/DashboardAppBar";
 
-const AgentActiveOrders = ({ navigation }: NativeStackScreenProps<SettledOrdersRootList>) => {
-  const orders = useSelector((state: RootState) => state.order.orders);
+const AgentSettledOrders = ({ navigation }: NativeStackScreenProps<SettledOrdersRootList>) => {
+  const orders = useSelector((state: RootState) => state.order.closedOrders);
   const handlePress = (item: IOrderListItem) => {
     // Handle press event for a list item
     navigation.navigate("agent-settled-orders-single", { orderId: item.id });
   };
   return (
-    <SafeAreaView style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
-      <AppBar title="List Order" />
+    <View style={{ flex: 1 }}>
+      <DashboardAppBar navigate={navigation} />
       <FlatList
         style={{ backgroundColor: "#ffffff", paddingVertical: 32, paddingHorizontal: 16 }}
         contentContainerStyle={{
@@ -37,8 +38,8 @@ const AgentActiveOrders = ({ navigation }: NativeStackScreenProps<SettledOrdersR
         )}
         keyExtractor={(item) => item.id.toString()}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
-export default AgentActiveOrders;
+export default AgentSettledOrders;

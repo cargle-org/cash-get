@@ -2,6 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AgentOpenOrders from ".";
 import AgentViewSingleOrder from "../components/view-order";
+import ViewOpenOrdersSingleOrder from "./view-order";
 
 export type OpenOrdersRootList = {
   "agent-open-orders-all": undefined;
@@ -19,7 +20,14 @@ const AgentActiveOrdersRoot = () => {
         name="agent-open-orders-all"
         component={AgentOpenOrders}
       />
-      <ActiveOrdersStack.Screen name="agent-open-orders-single" component={AgentViewSingleOrder} />
+      <ActiveOrdersStack.Screen
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+        name="agent-open-orders-single"
+        component={ViewOpenOrdersSingleOrder}
+      />
     </ActiveOrdersStack.Navigator>
   );
 };
