@@ -2,49 +2,31 @@ import { AppBar, Avatar, Box, Button, Divider, Flex, Icon, IconButton, Pressable
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useEffect, useState } from "react";
 import { Clipboard, SafeAreaView, ScrollView, StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
-import { DashboardShopOrdersRootList } from "../../root";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { orderApi } from "../../../../../../services/order.service";
-import { nairaCurrencyFormatter } from "../../../../../../utils/misc";
-import { IUser } from "../../../../../../services/types";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../../../../store/appSlice";
 import { AxiosError } from "axios";
-import { theme } from "../../../../../../utils/theme";
-import DashboardAppBar from "../../../../components/DashboardAppBar";
-import OrderAppBar from "../../../../components/OrderAppBar";
 import moment from "moment";
+import { orderApi } from "../../../../../services/order.service";
+import OrderAppBar from "../../../components/OrderAppBar";
+import { theme } from "../../../../../utils/theme";
+import { nairaCurrencyFormatter } from "../../../../../utils/misc";
+import { IUser } from "../../../../../services/types";
+import { SettledOrdersRootList } from "../root";
+import { Switch } from "react-native-paper";
+import { RootState } from "../../../../../store/appSlice";
 // import Clipboard from "@react-native-clipboard/clipboard";
 
-const ViewSingleOrder = (props: NativeStackScreenProps<DashboardShopOrdersRootList>) => {
+const ViewClosedOrdersSingleOrder = (props: NativeStackScreenProps<SettledOrdersRootList>) => {
   const { route, navigation } = props;
-  const [agentKey, setAgentKey] = useState("");
+  const [useSpikk, setUseSpikk] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-
+  const user = useSelector((state: RootState) => state.auth.user);
   const queryClient = useQueryClient();
   const orderId = (route.params as any)?.orderId;
-  const mutation = useMutation({
-    mutationFn: orderApi.confirmAgentKey,
-    onSuccess: ({ message, status, data }) => {
-      queryClient.invalidateQueries(orderId);
-      setSuccessMsg(message);
-      queryClient.invalidateQueries(["orders", orderId]);
-      setTimeout(() => {
-        setSuccessMsg("");
-      }, 3000);
-    },
-    onError: (error: AxiosError) => {
-      console.log(error.response?.data);
-      setErrorMsg((error.response?.data as any).message || "Error Encountered");
-      setTimeout(() => {
-        setErrorMsg("");
-      }, 3000);
-    },
-  });
 
-  const deleteMutation = useMutation({
-    mutationFn: orderApi.deleteOrder,
+  const acceptMutation = useMutation({
+    mutationFn: orderApi.acceptOrder,
     onSuccess: ({ message, status, data }) => {
       queryClient.invalidateQueries(orderId);
       setSuccessMsg(message);
@@ -63,15 +45,8 @@ const ViewSingleOrder = (props: NativeStackScreenProps<DashboardShopOrdersRootLi
     },
   });
 
-  const confirmOrder = (key: string) => {
-    mutation.mutate({
-      orderId: orderId,
-      agentKey: key,
-    });
-  };
-
-  const deleteOrder = () => {
-    deleteMutation.mutate({ orderId });
+  const acceptOrder = () => {
+    acceptMutation.mutate({ agentId: user?.id || "", orderId, useSpikk });
   };
   const { data, error, isFetching } = useQuery(["orders", orderId], () => orderApi.getSingleOrder(orderId));
   return (
@@ -123,40 +98,21 @@ const ViewSingleOrder = (props: NativeStackScreenProps<DashboardShopOrdersRootLi
             </View>
           </View>
           <Divider />
-          <View style={styles.orderCardCopyApiKeyContainer}>
-            <Text style={styles.orderCardCopyApiKeyTitle}>Shop Key</Text>
-            <View style={styles.orderCardCopyApiKeyPressable}>
-              <Text variant="overline" style={styles.orderCardCopyApiKeyText}>
-                {data?.data?.shopKey}
+          <View style={styles.orderCardSubmitAgentKeyContainer}>
+            <Flex direction="row" justify="between" mb={20}>
+              <Text color={theme.colors["dark-500"]} variant="h5" style={{ fontWeight: "600" }}>
+                {useSpikk ? "Use Spikk" : "Handle Yourself"}
               </Text>
-              <TouchableOpacity onPress={() => Clipboard.setString(data?.data?.shopKey || "")}>
-                <Icon name="content-copy" color={theme.colors.white} size={26} />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <Divider />
-          <View style={styles.orderCardSubmitAgentKeyContainer}>
-            <TextInput
-              variant="outlined"
-              label="Agent API Key"
-              onChangeText={setAgentKey}
-              value={agentKey}
-              color={theme.colors["dark-500"]}
-              inputStyle={{ backgroundColor: theme.colors["dark-100"] }}
-              style={{ marginBottom: 16 }}
-              editable={!data?.data?.agentConfirmed}
-            />
-            <Button
-              disabled={data?.data?.agentConfirmed || agentKey.length < 12}
-              onPress={() => confirmOrder(agentKey)}
-              color={theme.colors["dark-500"]}
-              style={{ paddingVertical: 10 }}
-              title="Submit Key"
-            />
-          </View>
-          <Divider />
-          <View style={styles.orderCardSubmitAgentKeyContainer}>
-            <Button onPress={() => deleteOrder()} color={"red"} tintColor="white" style={{ paddingVertical: 10 }} title="Cancel Order" />
+              <Switch
+                thumbColor={theme.colors["dark-500"]}
+                trackColor={{
+                  true: "#D5D5D5",
+                }}
+                value={useSpikk}
+                onValueChange={() => setUseSpikk(!useSpikk)}
+              />
+            </Flex>
+            <Button onPress={() => acceptOrder()} color={"blue"} tintColor="white" style={{ paddingVertical: 10 }} title="Accept Order" />
           </View>
         </ScrollView>
       )}
@@ -308,4 +264,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ViewSingleOrder;
+export default ViewClosedOrdersSingleOrder;

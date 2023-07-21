@@ -4,11 +4,11 @@ import AgentOpenOrders from ".";
 import ViewClosedOrdersSingleOrder from "./view-order";
 
 export type SettledOrdersRootList = {
-  "agent-settled-orders-all": undefined;
-  "agent-settled-orders-single": { orderId: string };
+  "shop-settled-orders-all": undefined;
+  "shop-settled-orders-single": { orderId: string };
 };
 
-const AgentSettledOrdersRoot = () => {
+const ShopSettledOrdersRoot = () => {
   const ActiveOrdersStack = createNativeStackNavigator<SettledOrdersRootList>();
   return (
     <ActiveOrdersStack.Navigator>
@@ -16,7 +16,7 @@ const AgentSettledOrdersRoot = () => {
         options={{
           headerShown: false,
         }}
-        name="agent-settled-orders-all"
+        name="shop-settled-orders-all"
         component={AgentOpenOrders}
       />
       <ActiveOrdersStack.Screen
@@ -24,11 +24,11 @@ const AgentSettledOrdersRoot = () => {
           headerShown: false,
           presentation: "modal",
         }}
-        name="agent-settled-orders-single"
+        name="shop-settled-orders-single"
         component={ViewClosedOrdersSingleOrder}
       />
     </ActiveOrdersStack.Navigator>
   );
 };
 
-export default AgentSettledOrdersRoot;
+export default ShopSettledOrdersRoot;

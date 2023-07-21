@@ -13,10 +13,10 @@ const getSingleOrder = async (payload: string): Promise<IResponse<IOrder>> =>
     url: `${ORDER_BASE_URL}/${payload}`,
   });
 
-const acceptOrder = async (payload: { orderId: string; agentId: string }): Promise<IResponse<IOrder>> =>
-  https.get({
+const acceptOrder = async (payload: { orderId: string; agentId: string; useSpikk: boolean }): Promise<IResponse<IOrder>> =>
+  https.post({
     url: `${ORDER_BASE_URL}/${payload.orderId}/acceptOrder`,
-    body: JSON.stringify({ agentId: payload.agentId }),
+    body: JSON.stringify({ agentId: `${payload.agentId}`, useSpikk: payload.useSpikk }),
   });
 
 const confirmAgentKey = async (payload: { orderId: string; agentKey: string }): Promise<IResponse<IOrder>> =>
@@ -25,10 +25,10 @@ const confirmAgentKey = async (payload: { orderId: string; agentKey: string }): 
     body: JSON.stringify({ key: payload.agentKey }),
   });
 
-const confirmShopKey = async (payload: { orderId: string; agentKey: string }): Promise<IResponse<IOrder>> =>
+const confirmShopKey = async (payload: { orderId: string; shopKey: string }): Promise<IResponse<IOrder>> =>
   https.post({
     url: `${ORDER_BASE_URL}/${payload.orderId}/confirmShop`,
-    body: JSON.stringify({ key: payload.agentKey }),
+    body: JSON.stringify({ key: payload.shopKey }),
   });
 
 const deleteOrder = async (payload: { orderId: string }): Promise<IResponse<null>> =>

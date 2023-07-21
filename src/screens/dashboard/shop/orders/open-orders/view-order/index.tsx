@@ -6,42 +6,27 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
 import { AxiosError } from "axios";
 import moment from "moment";
-import { orderApi } from "../../../../../services/order.service";
-import OrderAppBar from "../../../components/OrderAppBar";
-import { theme } from "../../../../../utils/theme";
-import { nairaCurrencyFormatter } from "../../../../../utils/misc";
-import { IUser } from "../../../../../services/types";
-import { ActiveOrdersRootList } from "../root";
+import { OpenOrdersRootList } from "../root";
+import { Switch } from "react-native-paper";
+import { orderApi } from "../../../../../../services/order.service";
+import { RootState } from "../../../../../../store/appSlice";
+import { theme } from "../../../../../../utils/theme";
+import OrderAppBar from "../../../../components/OrderAppBar";
+import { nairaCurrencyFormatter } from "../../../../../../utils/misc";
+import { IUser } from "../../../../../../services/types";
 // import Clipboard from "@react-native-clipboard/clipboard";
 
-const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRootList>) => {
+const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootList>) => {
   const { route, navigation } = props;
-  const [shopKey, setShopKey] = useState("");
+  const [useSpikk, setUseSpikk] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-
+  const user = useSelector((state: RootState) => state.auth.user);
   const queryClient = useQueryClient();
   const orderId = (route.params as any)?.orderId;
-  const mutation = useMutation({
-    mutationFn: orderApi.confirmShopKey,
-    onSuccess: ({ message, status, data }) => {
-      queryClient.invalidateQueries(orderId);
-      setSuccessMsg(message);
-      setTimeout(() => {
-        setSuccessMsg("");
-      }, 3000);
-    },
-    onError: (error: AxiosError) => {
-      console.log(error.response?.data);
-      setErrorMsg((error.response?.data as any).message || "Error Encountered");
-      setTimeout(() => {
-        setErrorMsg("");
-      }, 3000);
-    },
-  });
 
-  const deleteMutation = useMutation({
-    mutationFn: orderApi.deleteOrder,
+  const acceptMutation = useMutation({
+    mutationFn: orderApi.acceptOrder,
     onSuccess: ({ message, status, data }) => {
       queryClient.invalidateQueries(orderId);
       setSuccessMsg(message);
@@ -60,22 +45,10 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
     },
   });
 
-  const confirmOrder = (key: string) => {
-    mutation.mutate({
-      orderId: orderId,
-      shopKey: key,
-    });
-  };
-
-  const deleteOrder = () => {
-    deleteMutation.mutate({ orderId });
+  const acceptOrder = () => {
+    acceptMutation.mutate({ agentId: user?.id || "", orderId, useSpikk });
   };
   const { data, error, isFetching } = useQuery(["orders", orderId], () => orderApi.getSingleOrder(orderId));
-  console.log();
-  // useEffect(() => {
-  //   queryClient.invalidateQueries([orderId]);
-  //   console.log(data);
-  // }, [data]);
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors["dark-100"] }}>
       <OrderAppBar navigate={navigation} orderId={orderId} />
@@ -125,36 +98,21 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
             </View>
           </View>
           <Divider />
-          <View style={styles.orderCardCopyApiKeyContainer}>
-            <Text style={styles.orderCardCopyApiKeyTitle}>Agent Key</Text>
-            <View style={styles.orderCardCopyApiKeyPressable}>
-              <Text variant="overline" style={styles.orderCardCopyApiKeyText}>
-                {data?.data?.agentKey}
-              </Text>
-              <TouchableOpacity onPress={() => Clipboard.setString(data?.data?.agentKey || "")}>
-                <Icon name="content-copy" color={theme.colors.white} size={26} />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <Divider />
           <View style={styles.orderCardSubmitAgentKeyContainer}>
-            <TextInput
-              variant="outlined"
-              label="Enter Shop Key"
-              onChangeText={setShopKey}
-              value={data?.data?.shopConfirmed ? data.data.shopKey : shopKey}
-              color={theme.colors["dark-500"]}
-              inputStyle={{ backgroundColor: theme.colors["dark-100"] }}
-              style={{ marginBottom: 16 }}
-              editable={!data?.data?.shopConfirmed}
-            />
-            <Button
-              disabled={data?.data?.shopConfirmed || shopKey.length < 12}
-              onPress={() => confirmOrder(shopKey)}
-              color={theme.colors["dark-500"]}
-              style={{ paddingVertical: 10 }}
-              title="Submit Key"
-            />
+            <Flex direction="row" justify="between" mb={20}>
+              <Text color={theme.colors["dark-500"]} variant="h5" style={{ fontWeight: "600" }}>
+                {useSpikk ? "Use Spikk" : "Handle Yourself"}
+              </Text>
+              <Switch
+                thumbColor={theme.colors["dark-500"]}
+                trackColor={{
+                  true: "#D5D5D5",
+                }}
+                value={useSpikk}
+                onValueChange={() => setUseSpikk(!useSpikk)}
+              />
+            </Flex>
+            <Button onPress={() => acceptOrder()} color={"blue"} tintColor="white" style={{ paddingVertical: 10 }} title="Accept Order" />
           </View>
         </ScrollView>
       )}

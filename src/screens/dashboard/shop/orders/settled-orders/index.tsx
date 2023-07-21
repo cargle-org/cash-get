@@ -2,20 +2,18 @@ import { AppBar, Text } from "@react-native-material/core";
 import React from "react";
 import { FlatList, SafeAreaView, ScrollView, StatusBar, View } from "react-native";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../../store/appSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { IOrderListItem } from "../../../../services/types";
-import { DashboardAgentRootList } from "../root";
 import SingleOrder from "../components/single-order";
 import { SettledOrdersRootList } from "./root";
-import DashboardAppBar from "../../components/DashboardAppBar";
-import { theme } from "../../../../utils/theme";
+import { RootState } from "../../../../../store/appSlice";
+import { IOrderListItem } from "../../../../../services/types";
+import { theme } from "../../../../../utils/theme";
 
 const AgentSettledOrders = ({ navigation }: NativeStackScreenProps<SettledOrdersRootList>) => {
   const orders = useSelector((state: RootState) => state.order.closedOrders);
   const handlePress = (item: IOrderListItem) => {
     // Handle press event for a list item
-    navigation.navigate("agent-settled-orders-single", { orderId: item.id });
+    navigation.navigate("shop-settled-orders-single", { orderId: item.id });
   };
   return (
     <View style={{ flex: 1 }}>

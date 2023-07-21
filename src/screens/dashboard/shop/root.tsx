@@ -46,7 +46,7 @@ const DashboardShopRoot = () => {
         name="shop-create-order"
         component={CreateOrder}
         options={{
-          tabBarLabel: "Home",
+          tabBarLabel: "Create Order",
           tabBarIcon: ({ color }) => <Icon color={color} size={26} name="home" />,
         }}
       />

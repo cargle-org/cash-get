@@ -6,17 +6,18 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useSelector } from "react-redux";
 import { AxiosError } from "axios";
 import moment from "moment";
-import { orderApi } from "../../../../../services/order.service";
-import OrderAppBar from "../../../components/OrderAppBar";
-import { theme } from "../../../../../utils/theme";
-import { nairaCurrencyFormatter } from "../../../../../utils/misc";
-import { IUser } from "../../../../../services/types";
-import { ActiveOrdersRootList } from "../root";
+
+import { orderApi } from "../../../../../../services/order.service";
+import { theme } from "../../../../../../utils/theme";
+import OrderAppBar from "../../../../components/OrderAppBar";
+import { nairaCurrencyFormatter } from "../../../../../../utils/misc";
+import { IUser } from "../../../../../../services/types";
+import { SettledOrdersRootList } from "../root";
 // import Clipboard from "@react-native-clipboard/clipboard";
 
-const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRootList>) => {
+const ViewClosedOrdersSingleOrder = (props: NativeStackScreenProps<SettledOrdersRootList>) => {
   const { route, navigation } = props;
-  const [shopKey, setShopKey] = useState("");
+  const [agentKey, setAgentKey] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
@@ -70,6 +71,7 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
   const deleteOrder = () => {
     deleteMutation.mutate({ orderId });
   };
+
   const { data, error, isFetching } = useQuery(["orders", orderId], () => orderApi.getSingleOrder(orderId));
   console.log();
   // useEffect(() => {
@@ -124,65 +126,7 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
               </View>
             </View>
           </View>
-          <Divider />
-          <View style={styles.orderCardCopyApiKeyContainer}>
-            <Text style={styles.orderCardCopyApiKeyTitle}>Agent Key</Text>
-            <View style={styles.orderCardCopyApiKeyPressable}>
-              <Text variant="overline" style={styles.orderCardCopyApiKeyText}>
-                {data?.data?.agentKey}
-              </Text>
-              <TouchableOpacity onPress={() => Clipboard.setString(data?.data?.agentKey || "")}>
-                <Icon name="content-copy" color={theme.colors.white} size={26} />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <Divider />
-          <View style={styles.orderCardSubmitAgentKeyContainer}>
-            <TextInput
-              variant="outlined"
-              label="Enter Shop Key"
-              onChangeText={setShopKey}
-              value={data?.data?.shopConfirmed ? data.data.shopKey : shopKey}
-              color={theme.colors["dark-500"]}
-              inputStyle={{ backgroundColor: theme.colors["dark-100"] }}
-              style={{ marginBottom: 16 }}
-              editable={!data?.data?.shopConfirmed}
-            />
-            <Button
-              disabled={data?.data?.shopConfirmed || shopKey.length < 12}
-              onPress={() => confirmOrder(shopKey)}
-              color={theme.colors["dark-500"]}
-              style={{ paddingVertical: 10 }}
-              title="Submit Key"
-            />
-          </View>
         </ScrollView>
-      )}
-      {errorMsg !== "" && (
-        <Snackbar
-          message={errorMsg}
-          action={<Button variant="text" title="Dismiss" onPress={() => setErrorMsg("")} color={theme.colors["dark-100"]} compact />}
-          style={{ position: "absolute", start: 16, end: 16, bottom: 16 }}
-        />
-      )}
-
-      {successMsg !== "" && (
-        <Snackbar
-          message={successMsg}
-          action={
-            <Button
-              variant="text"
-              title="Dismiss"
-              onPress={() => {
-                setSuccessMsg("");
-                navigation.goBack();
-              }}
-              color={theme.colors["dark-100"]}
-              compact
-            />
-          }
-          style={{ position: "absolute", start: 16, end: 16, bottom: 16 }}
-        />
       )}
     </View>
   );
@@ -306,4 +250,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ViewOpenOrdersSingleOrder;
+export default ViewClosedOrdersSingleOrder;

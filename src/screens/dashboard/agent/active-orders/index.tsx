@@ -9,6 +9,7 @@ import { DashboardAgentRootList } from "../root";
 import SingleOrder from "../components/single-order";
 import { ActiveOrdersRootList } from "./root";
 import DashboardAppBar from "../../components/DashboardAppBar";
+import { theme } from "../../../../utils/theme";
 
 const AgentActiveOrders = ({ navigation }: NativeStackScreenProps<ActiveOrdersRootList>) => {
   const orders = useSelector((state: RootState) => state.order.activeOrders);
@@ -18,9 +19,9 @@ const AgentActiveOrders = ({ navigation }: NativeStackScreenProps<ActiveOrdersRo
   };
   return (
     <View style={{ flex: 1 }}>
-      <DashboardAppBar navigate={navigation} />
+      {/* <DashboardAppBar navigate={navigation} /> */}
       <FlatList
-        style={{ backgroundColor: "#ffffff", paddingVertical: 32, paddingHorizontal: 16 }}
+        style={{ backgroundColor: theme.colors["dark-100"], paddingVertical: 32, paddingHorizontal: 16 }}
         contentContainerStyle={{
           display: "flex",
           gap: 12,

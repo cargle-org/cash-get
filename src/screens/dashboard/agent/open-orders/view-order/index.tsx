@@ -18,29 +18,12 @@ import { RootState } from "../../../../../store/appSlice";
 
 const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootList>) => {
   const { route, navigation } = props;
-  const [isAgent, setIsAgent] = useState(false);
+  const [useSpikk, setUseSpikk] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const user = useSelector((state: RootState) => state.auth.user);
   const queryClient = useQueryClient();
   const orderId = (route.params as any)?.orderId;
-  const mutation = useMutation({
-    mutationFn: orderApi.confirmShopKey,
-    onSuccess: ({ message, status, data }) => {
-      queryClient.invalidateQueries(orderId);
-      setSuccessMsg(message);
-      setTimeout(() => {
-        setSuccessMsg("");
-      }, 3000);
-    },
-    onError: (error: AxiosError) => {
-      console.log(error.response?.data);
-      setErrorMsg((error.response?.data as any).message || "Error Encountered");
-      setTimeout(() => {
-        setErrorMsg("");
-      }, 3000);
-    },
-  });
 
   const acceptMutation = useMutation({
     mutationFn: orderApi.acceptOrder,
@@ -63,7 +46,7 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootL
   });
 
   const acceptOrder = () => {
-    acceptMutation.mutate({ agentId: user?.id || "", orderId });
+    acceptMutation.mutate({ agentId: user?.id || "", orderId, useSpikk });
   };
   const { data, error, isFetching } = useQuery(["orders", orderId], () => orderApi.getSingleOrder(orderId));
   return (
@@ -118,15 +101,15 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootL
           <View style={styles.orderCardSubmitAgentKeyContainer}>
             <Flex direction="row" justify="between" mb={20}>
               <Text color={theme.colors["dark-500"]} variant="h5" style={{ fontWeight: "600" }}>
-                {isAgent ? "Use Spikk" : "Handle Yourself"}
+                {useSpikk ? "Use Spikk" : "Handle Yourself"}
               </Text>
               <Switch
                 thumbColor={theme.colors["dark-500"]}
                 trackColor={{
                   true: "#D5D5D5",
                 }}
-                value={isAgent}
-                onValueChange={() => setIsAgent(!isAgent)}
+                value={useSpikk}
+                onValueChange={() => setUseSpikk(!useSpikk)}
               />
             </Flex>
             <Button onPress={() => acceptOrder()} color={"blue"} tintColor="white" style={{ paddingVertical: 10 }} title="Accept Order" />

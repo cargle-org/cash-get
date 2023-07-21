@@ -2,23 +2,21 @@ import { AppBar, Text } from "@react-native-material/core";
 import React from "react";
 import { FlatList, SafeAreaView, ScrollView, StatusBar, View } from "react-native";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../../store/appSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { IOrderListItem } from "../../../../services/types";
-import { DashboardAgentRootList } from "../root";
 import SingleOrder from "../components/single-order";
-import { SettledOrdersRootList } from "./root";
-import DashboardAppBar from "../../components/DashboardAppBar";
-import { theme } from "../../../../utils/theme";
+import { OpenOrdersRootList } from "./root";
+import { RootState } from "../../../../../store/appSlice";
+import { IOrderListItem } from "../../../../../services/types";
+import { theme } from "../../../../../utils/theme";
 
-const AgentSettledOrders = ({ navigation }: NativeStackScreenProps<SettledOrdersRootList>) => {
-  const orders = useSelector((state: RootState) => state.order.closedOrders);
+const AgentOpenOrders = ({ navigation }: NativeStackScreenProps<OpenOrdersRootList>) => {
+  const orders = useSelector((state: RootState) => state.order.openOrders);
   const handlePress = (item: IOrderListItem) => {
     // Handle press event for a list item
-    navigation.navigate("agent-settled-orders-single", { orderId: item.id });
+    navigation.navigate("agent-open-orders-single", { orderId: item.id });
   };
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
       <FlatList
         style={{ backgroundColor: theme.colors["dark-100"], paddingVertical: 32, paddingHorizontal: 16 }}
         contentContainerStyle={{
@@ -28,8 +26,8 @@ const AgentSettledOrders = ({ navigation }: NativeStackScreenProps<SettledOrders
         data={orders}
         renderItem={({ item }) => (
           <SingleOrder
-            orderId={item.id}
             time={item.deliveryPeriod}
+            orderId={item.id}
             amount={item.amount}
             status={item.status}
             agentName={item.agentName}
@@ -44,4 +42,4 @@ const AgentSettledOrders = ({ navigation }: NativeStackScreenProps<SettledOrders
   );
 };
 
-export default AgentSettledOrders;
+export default AgentOpenOrders;
