@@ -10,9 +10,8 @@ class HttpFacade {
   private http;
 
   constructor() {
-    console.log(BASE_URL);
     this.http = axios.create({
-      baseURL: BASE_URL,
+      baseURL: process.env.BASE_URL,
       headers: { "content-type": "application/json" },
     });
 
