@@ -107,8 +107,8 @@ const ViewClosedOrdersSingleOrder = (props: NativeStackScreenProps<SettledOrders
             )}
             <Divider />
             <View style={styles.orderCardTimeContainer}>
-              <Text style={styles.orderCardTimeText1}>Scheduled for</Text>
-              <Text style={styles.orderCardTimeText2}>{moment(data?.data?.deliveryPeriod).format("hh:mm D-m-YY")}</Text>
+              <Text style={styles.orderCardTimeText1}>Pick up before</Text>
+              <Text style={styles.orderCardTimeText2}>{moment(data?.data?.deliveryPeriod).format("hh:mmA D-m-YY")}</Text>
             </View>
             <Divider />
             <View style={styles.orderCardItemsContainer}>

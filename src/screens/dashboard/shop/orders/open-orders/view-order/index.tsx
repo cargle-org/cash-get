@@ -18,15 +18,14 @@ import { IUser } from "../../../../../../services/types";
 
 const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootList>) => {
   const { route, navigation } = props;
-  const [useSpikk, setUseSpikk] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const user = useSelector((state: RootState) => state.auth.user);
   const queryClient = useQueryClient();
   const orderId = (route.params as any)?.orderId;
 
-  const acceptMutation = useMutation({
-    mutationFn: orderApi.acceptOrder,
+  const deleteMutation = useMutation({
+    mutationFn: orderApi.deleteOrder,
     onSuccess: ({ message, status, data }) => {
       queryClient.invalidateQueries(orderId);
       setSuccessMsg(message);
@@ -45,8 +44,8 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootL
     },
   });
 
-  const acceptOrder = () => {
-    acceptMutation.mutate({ agentId: user?.id || "", orderId, useSpikk });
+  const deleteOrder = () => {
+    deleteMutation.mutate({ orderId });
   };
   const { data, error, isFetching } = useQuery(["orders", orderId], () => orderApi.getSingleOrder(orderId));
   return (
@@ -78,8 +77,8 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootL
             )}
             <Divider />
             <View style={styles.orderCardTimeContainer}>
-              <Text style={styles.orderCardTimeText1}>Scheduled for</Text>
-              <Text style={styles.orderCardTimeText2}>{moment(data?.data?.deliveryPeriod).format("hh:mm D-m-YY")}</Text>
+              <Text style={styles.orderCardTimeText1}>Pick up before</Text>
+              <Text style={styles.orderCardTimeText2}>{moment(data?.data?.deliveryPeriod).format("hh:mmA D-m-YY")}</Text>
             </View>
             <Divider />
             <View style={styles.orderCardItemsContainer}>
@@ -99,20 +98,7 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootL
           </View>
           <Divider />
           <View style={styles.orderCardSubmitAgentKeyContainer}>
-            <Flex direction="row" justify="between" mb={20}>
-              <Text color={theme.colors["dark-500"]} variant="h5" style={{ fontWeight: "600" }}>
-                {useSpikk ? "Use Spikk" : "Handle Yourself"}
-              </Text>
-              <Switch
-                thumbColor={theme.colors["dark-500"]}
-                trackColor={{
-                  true: "#D5D5D5",
-                }}
-                value={useSpikk}
-                onValueChange={() => setUseSpikk(!useSpikk)}
-              />
-            </Flex>
-            <Button onPress={() => acceptOrder()} color={"blue"} tintColor="white" style={{ paddingVertical: 10 }} title="Accept Order" />
+            <Button onPress={() => deleteOrder()} color={"red"} tintColor="white" style={{ paddingVertical: 10 }} title="Delete Order" />
           </View>
         </ScrollView>
       )}

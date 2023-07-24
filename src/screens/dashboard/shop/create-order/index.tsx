@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import React, { useMemo, useState } from "react";
 import { TextInput as DefaultTextInput, View, ScrollView, Keyboard } from "react-native";
 import { createOrderValidationSchema } from "./validation";
-import { isObjectEmpty } from "../../../../utils/misc";
+import { isObjectEmpty, nairaCurrencyFormatter } from "../../../../utils/misc";
 import DashboardAppBar from "../../components/DashboardAppBar";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useMutation } from "react-query";
@@ -45,6 +45,7 @@ const CreateOrder = (props: CreateOrderProps) => {
       createOrderFormik.resetForm();
       setTimeout(() => {
         setSuccessMsg("");
+        navigation.navigate("shop-view-orders", { screen: "shop-open-orders" });
       }, 3000);
     },
     onError: (error: AxiosError) => {
@@ -59,10 +60,10 @@ const CreateOrder = (props: CreateOrderProps) => {
   const createOrderFormik = useFormik({
     validationSchema: createOrderValidationSchema,
     initialValues: {
-      amount: "",
-      address: "",
+      amount: "0",
+      address: shop?.address || "",
       contactName: "",
-      contactNumber: "",
+      contactNumber: shop?.phoneNo || "",
       deliveryPeriod: "",
       extraInfo: "",
     },
@@ -95,13 +96,13 @@ const CreateOrder = (props: CreateOrderProps) => {
           Create Order
         </Text>
         <TextInput
-          value={createOrderFormik.values.amount}
+          value={nairaCurrencyFormatter(createOrderFormik.values.amount)}
           variant="outlined"
           label="Enter Amount"
           keyboardType="numeric"
           color={theme.colors["dark-500"]}
           inputStyle={{ backgroundColor: theme.colors["dark-100"] }}
-          onChangeText={createOrderFormik.handleChange("amount")}
+          onChangeText={(text) => createOrderFormik.setFieldValue("amount", text.substring(1).replaceAll(",", "") || "0")}
           onBlur={createOrderFormik.handleBlur("amount")}
           helperText={createOrderFormik.errors.amount && createOrderFormik.touched.amount ? createOrderFormik.errors.amount : ""}
         />
@@ -144,7 +145,7 @@ const CreateOrder = (props: CreateOrderProps) => {
           <TextInput
             value={deliveryPeriod}
             variant="outlined"
-            label="Enter Delivery Period"
+            label="Select Pickup time"
             color={theme.colors["dark-500"]}
             inputStyle={{ backgroundColor: theme.colors["dark-100"] }}
             onFocus={() => setDatePickerVisibility(true)}
@@ -204,7 +205,7 @@ const CreateOrder = (props: CreateOrderProps) => {
             <Button
               variant="text"
               title="View Order"
-              onPress={() => navigation.navigate("shop-view-orders")}
+              onPress={() => navigation.navigate("shop-view-orders", { screen: "shop-open-orders" })}
               color={theme.colors["dark-100"]}
               compact
             />
