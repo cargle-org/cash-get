@@ -28,10 +28,12 @@ const listenForOrders = (userId: string, role: UserEnum) => {
     snapshot.forEach((childSnapshot) => {
       allOrders.push(childSnapshot.val());
     });
+    // allOrders.sort((a, b) => (new Date(a.deliveryPeriod).getTime() < new Date(b.deliveryPeriod).getTime() ? -1 : 1));
+    const sortedOrders = allOrders.slice().sort((a, b) => new Date(a.deliveryPeriod).getTime() - new Date(b.deliveryPeriod).getTime());
     if (role === UserEnum.AGENT) {
-      const activeOrders = allOrders.filter((order) => order.agentId === userId && order.status === orderStatusEnum.IN_PROGRESS);
-      const openOrders = allOrders.filter((order) => order.status === orderStatusEnum.CREATED);
-      const closedOrders = allOrders.filter((order) => order.agentId === userId && order.status === orderStatusEnum.COMPLETED);
+      const activeOrders = sortedOrders.filter((order) => order.agentId === userId && order.status === orderStatusEnum.IN_PROGRESS);
+      const openOrders = sortedOrders.filter((order) => order.status === orderStatusEnum.CREATED);
+      const closedOrders = sortedOrders.filter((order) => order.agentId === userId && order.status === orderStatusEnum.COMPLETED);
       store.dispatch(
         getOrders({
           activeOrders,
@@ -40,9 +42,9 @@ const listenForOrders = (userId: string, role: UserEnum) => {
         })
       );
     } else {
-      const activeOrders = allOrders.filter((order) => order.shopId === userId && order.status === orderStatusEnum.IN_PROGRESS);
-      const openOrders = allOrders.filter((order) => order.shopId === userId && order.status === orderStatusEnum.CREATED);
-      const closedOrders = allOrders.filter((order) => order.shopId === userId && order.status === orderStatusEnum.COMPLETED);
+      const activeOrders = sortedOrders.filter((order) => order.shopId === userId && order.status === orderStatusEnum.IN_PROGRESS);
+      const openOrders = sortedOrders.filter((order) => order.shopId === userId && order.status === orderStatusEnum.CREATED);
+      const closedOrders = sortedOrders.filter((order) => order.shopId === userId && order.status === orderStatusEnum.COMPLETED);
       store.dispatch(
         getOrders({
           activeOrders,

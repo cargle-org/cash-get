@@ -1,6 +1,6 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AgentOpenOrders from ".";
+import ShopOpenOrders from ".";
 import ViewOpenOrdersSingleOrder from "./view-order";
 
 export type OpenOrdersRootList = {
@@ -17,7 +17,7 @@ const ShopOpenOrdersRoot = () => {
           headerShown: false,
         }}
         name="agent-open-orders-all"
-        component={AgentOpenOrders}
+        component={ShopOpenOrders}
       />
       <ActiveOrdersStack.Screen
         options={{

@@ -9,7 +9,7 @@ import { RootState } from "../../../../../store/appSlice";
 import { IOrderListItem } from "../../../../../services/types";
 import { theme } from "../../../../../utils/theme";
 
-const AgentOpenOrders = ({ navigation }: NativeStackScreenProps<OpenOrdersRootList>) => {
+const ShopOpenOrders = ({ navigation }: NativeStackScreenProps<OpenOrdersRootList>) => {
   const orders = useSelector((state: RootState) => state.order.openOrders);
   const handlePress = (item: IOrderListItem) => {
     // Handle press event for a list item
@@ -42,4 +42,4 @@ const AgentOpenOrders = ({ navigation }: NativeStackScreenProps<OpenOrdersRootLi
   );
 };
 
-export default AgentOpenOrders;
+export default ShopOpenOrders;
