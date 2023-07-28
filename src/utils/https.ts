@@ -7,13 +7,12 @@ import { store } from "../store";
 import { RootState } from "../store/appSlice";
 import { BASE_URL } from "@env";
 
-console.log({ BASE_URL });
 class HttpFacade {
   private http;
 
   constructor() {
     this.http = axios.create({
-      baseURL: process.env.BASE_URL,
+      baseURL: BASE_URL,
       headers: { "content-type": "application/json" },
     });
 
