@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "134718253671",
+    "firebase_url": "https://feedvote-9736e-default-rtdb.firebaseio.com",
+    "project_id": "feedvote-9736e",
+    "storage_bucket": "feedvote-9736e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:134718253671:android:c6a963ce48e9b0cd12c2c2",
+        "android_client_info": {
+          "package_name": "com.kastroud.cashget"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "134718253671-thjtul46g9ookfdnhn9ne19c5h529pkc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB88O6LpJQW_42dNTVh6_BLIAtgswfpwRY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "134718253671-thjtul46g9ookfdnhn9ne19c5h529pkc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

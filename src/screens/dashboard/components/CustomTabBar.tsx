@@ -5,7 +5,7 @@ import { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
 import { Box, Flex, Icon, IconButton, Text } from "@react-native-material/core";
 import { theme } from "../../../utils/theme";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/appSlice";
+import { RootState, clearStore } from "../../../store/appSlice";
 import { logout } from "../../../store/authSlice";
 
 const CustomTabBar = ({ state, descriptors, navigation, position }: MaterialTopTabBarProps) => {
@@ -14,6 +14,7 @@ const CustomTabBar = ({ state, descriptors, navigation, position }: MaterialTopT
 
   const onClickLogout = () => {
     dispatch(logout());
+    dispatch(clearStore());
     navigation.navigate("auth");
   };
   return (

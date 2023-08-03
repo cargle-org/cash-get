@@ -5,8 +5,9 @@ import "firebase/compat/messaging";
 import "firebase/compat/database";
 import { store } from "../store";
 import { getOrders } from "../store/orderSlice";
-import { IOrderListItem, UserEnum, orderStatusEnum } from "./types";
+import { IOrderListItem, IResponse, IUser, UserEnum, orderStatusEnum } from "./types";
 import {
+  BASE_URL,
   FIREBASE_API_KEY,
   FIREBASE_APP_ID,
   FIREBASE_AUTH_DOMAIN,
@@ -15,6 +16,7 @@ import {
   FIREBASE_PROJECT_ID,
   FIREBASE_STORAGE_BUCKET,
 } from "@env";
+import https from "../utils/https";
 
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,
@@ -69,6 +71,18 @@ const listenForOrders = (userId: string, role: UserEnum) => {
   };
 };
 
+const updateShopToken = async (payload: { shopId: string; firebaseToken: string }): Promise<IResponse<IUser>> =>
+  https.post({
+    url: `${BASE_URL}/shop/setFirebaseToken/${payload.shopId}`,
+    body: JSON.stringify(payload),
+  });
+
+const updateAgentToken = async (payload: { agentId: string; firebaseToken: string }): Promise<IResponse<IUser>> =>
+  https.post({
+    url: `${BASE_URL}/user/setFirebaseToken/${payload.agentId}`,
+    body: JSON.stringify(payload),
+  });
+
 // const listenForMessages = (ticketRef: string) => {
 //   const ticketMessageRef = db.ref(`ticket/${ticketRef}/messages`);
 //   ticketMessageRef.on("value", (snapshot) => {
@@ -82,4 +96,6 @@ const listenForOrders = (userId: string, role: UserEnum) => {
 
 export const firebaseService = {
   listenForOrders,
+  updateAgentToken,
+  updateShopToken,
 };

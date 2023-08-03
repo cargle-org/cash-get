@@ -5,7 +5,7 @@ import { logout } from "../../../store/authSlice";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { theme } from "../../../utils/theme";
 import { Icon } from "@react-native-material/core";
-import { RootState } from "../../../store/appSlice";
+import { RootState, clearStore } from "../../../store/appSlice";
 
 interface IDashboardAppBar {
   title?: string;
@@ -19,6 +19,7 @@ const DashboardAppBar: React.FC<IDashboardAppBar> = (props) => {
 
   const onClickLogout = () => {
     dispatch(logout());
+    dispatch(clearStore());
     navigate.navigate("auth");
   };
   return (

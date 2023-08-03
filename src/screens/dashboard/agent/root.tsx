@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Icon } from "@react-native-material/core";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../store/appSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, setFirebaseToken } from "../../../store/appSlice";
 import AgentActiveOrders from "./active-orders";
 import AgentActiveOrdersRoot from "./active-orders/root";
 import AgentOpenOrdersRoot from "./open-orders/root";
@@ -13,6 +13,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { firebaseService } from "../../../services/firebase.service";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import CustomTabBar from "../components/CustomTabBar";
+import generatePushNotificationsToken from "../../../utils/pushNotifications";
+import {
+  Subscription,
+  addNotificationReceivedListener,
+  addNotificationResponseReceivedListener,
+  removeNotificationSubscription,
+} from "expo-notifications";
 
 export type DashboardAgentRootList = {
   "agent-active-orders": undefined;
@@ -22,8 +29,39 @@ export type DashboardAgentRootList = {
 
 const DashboardAgentRoot = () => {
   // const DashboardAgentNavigator = createBottomTabNavigator<DashboardAgentRootList>();
+  const dispatch = useDispatch();
+  const notificationListener = useRef<Subscription>();
+  const responseListener = useRef<Subscription>();
   const DashboardAgentNavigator = createMaterialTopTabNavigator<DashboardAgentRootList>();
   const user = useSelector((state: RootState) => state.auth.user);
+  const firebaseToken = useSelector((state: RootState) => state.app.firebaseToken);
+
+  useEffect(() => {
+    if (!firebaseToken) {
+      generatePushNotificationsToken().then((token) => {
+        if (!token) return;
+        console.log(token);
+        firebaseService.updateAgentToken({
+          agentId: user!.id,
+          firebaseToken: token,
+        });
+        dispatch(setFirebaseToken({ firebaseToken: token }));
+      });
+    }
+
+    notificationListener.current = addNotificationReceivedListener((notification) => {
+      console.log({ notification });
+    });
+
+    responseListener.current = addNotificationResponseReceivedListener((response) => {
+      console.log({ response });
+    });
+
+    return () => {
+      removeNotificationSubscription(notificationListener.current as Subscription);
+      removeNotificationSubscription(responseListener.current as Subscription);
+    };
+  }, []);
 
   useEffect(() => {
     const removeListener = firebaseService.listenForOrders(user!.id, user!.role);

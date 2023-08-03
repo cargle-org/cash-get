@@ -1,17 +1,23 @@
 import { AnyAction, Reducer, combineReducers, createSlice } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PayloadAction } from "@reduxjs/toolkit";
 import { authSlice } from "./authSlice";
 import { orderSlice } from "./orderSlice";
 
 const appSlice = createSlice({
   name: "app",
-  initialState: {} as {},
+  initialState: {
+    firebaseToken: "",
+  } as { firebaseToken: string },
   reducers: {
     clearStore() {},
+    setFirebaseToken(state, action: PayloadAction<{ firebaseToken: string }>) {
+      state.firebaseToken = action.payload.firebaseToken;
+    },
   },
 });
 
-export const { clearStore } = appSlice.actions;
+export const { clearStore, setFirebaseToken } = appSlice.actions;
 
 const reducers = combineReducers({
   app: appSlice.reducer,
