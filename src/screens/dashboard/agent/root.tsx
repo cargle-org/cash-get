@@ -50,7 +50,7 @@ const DashboardAgentRoot = () => {
     }
 
     notificationListener.current = addNotificationReceivedListener((notification) => {
-      console.log({ notification });
+      console.log(notification);
     });
 
     responseListener.current = addNotificationResponseReceivedListener((response) => {
@@ -70,49 +70,6 @@ const DashboardAgentRoot = () => {
     };
   }, []);
   return (
-    // <DashboardAgentNavigator.Navigator
-    //   screenOptions={{
-    //     headerShown: false,
-    //     tabBarActiveTintColor: theme.colors.white,
-    //     tabBarInactiveTintColor: theme.colors["dark-300"],
-    //     tabBarStyle: {
-    //       backgroundColor: theme.colors["dark-500"],
-    //       paddingBottom: 12,
-    //       paddingTop: 12,
-    //       height: 64,
-    //       alignItems: "center",
-    //     },
-    //     tabBarIconStyle: {
-    //       // padding: 16,
-    //       alignItems: "center",
-    //     },
-    //   }}
-    // >
-    //   <DashboardAgentNavigator.Screen
-    //     name="agent-active-orders"
-    //     component={AgentActiveOrdersRoot}
-    //     options={{
-    //       tabBarLabel: "Active Orders",
-    //       tabBarIcon: ({ color }) => <Icon color={color} size={26} name="email-open" />,
-    //     }}
-    //   />
-    //   <DashboardAgentNavigator.Screen
-    //     name="agent-open-orders"
-    //     component={AgentOpenOrdersRoot}
-    //     options={{
-    //       tabBarLabel: "Open Orders",
-    //       tabBarIcon: ({ color }) => <Icon color={color} size={26} name="email" />,
-    //     }}
-    //   />
-    //   <DashboardAgentNavigator.Screen
-    //     name="agent-settled-orders"
-    //     component={AgentSettledOrdersRoot}
-    //     options={{
-    //       tabBarLabel: "Closed Orders",
-    //       tabBarIcon: ({ color }) => <Icon color={color} size={26} name="email-check" />,
-    //     }}
-    //   />
-    // </DashboardAgentNavigator.Navigator>
     <DashboardAgentNavigator.Navigator tabBar={(props) => <CustomTabBar {...props} />}>
       <DashboardAgentNavigator.Screen options={{ title: "Active" }} name="agent-active-orders" component={AgentActiveOrdersRoot} />
       <DashboardAgentNavigator.Screen options={{ title: "Open" }} name="agent-open-orders" component={AgentOpenOrdersRoot} />

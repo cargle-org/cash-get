@@ -26,6 +26,7 @@ const reducers = combineReducers({
 });
 
 export const rootReducer: Reducer = (state: ReturnType<typeof reducers>, action: AnyAction) => {
+  console.log(AsyncStorage.getItem("persist:root"));
   if (action.type === "app/clearStore") {
     // this applies to all keys defined in persistConfig(s)
     AsyncStorage.removeItem("persist:root");

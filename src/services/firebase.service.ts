@@ -27,7 +27,6 @@ const firebaseConfig = {
   storageBucket: FIREBASE_STORAGE_BUCKET,
   messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
 };
-console.log(firebaseConfig);
 
 firebase.initializeApp(firebaseConfig);
 
@@ -73,13 +72,13 @@ const listenForOrders = (userId: string, role: UserEnum) => {
 
 const updateShopToken = async (payload: { shopId: string; firebaseToken: string }): Promise<IResponse<IUser>> =>
   https.post({
-    url: `${BASE_URL}/shop/setFirebaseToken/${payload.shopId}`,
+    url: `${BASE_URL}/shop/update-notification-token/${payload.shopId}`,
     body: JSON.stringify(payload),
   });
 
 const updateAgentToken = async (payload: { agentId: string; firebaseToken: string }): Promise<IResponse<IUser>> =>
   https.post({
-    url: `${BASE_URL}/user/setFirebaseToken/${payload.agentId}`,
+    url: `${BASE_URL}/user/update-notification-token/${payload.agentId}`,
     body: JSON.stringify(payload),
   });
 
