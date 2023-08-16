@@ -40,10 +40,9 @@ const DashboardAgentRoot = () => {
     if (!firebaseToken) {
       generatePushNotificationsToken().then((token) => {
         if (!token) return;
-        console.log(token);
         firebaseService.updateAgentToken({
           agentId: user!.id,
-          firebaseToken: token,
+          notificationToken: token,
         });
         dispatch(setFirebaseToken({ firebaseToken: token }));
       });
@@ -61,7 +60,7 @@ const DashboardAgentRoot = () => {
       removeNotificationSubscription(notificationListener.current as Subscription);
       removeNotificationSubscription(responseListener.current as Subscription);
     };
-  }, []);
+  }, [firebaseToken]);
 
   useEffect(() => {
     const removeListener = firebaseService.listenForOrders(user!.id, user!.role);

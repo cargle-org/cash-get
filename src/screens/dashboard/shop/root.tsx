@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import CreateOrder from "./create-order";
 import { Icon } from "@react-native-material/core";
@@ -6,8 +6,16 @@ import ShopOrdersRoot from "./orders/root";
 import { firebaseService } from "../../../services/firebase.service";
 import { theme } from "../../../utils/theme";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../store/appSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, setFirebaseToken } from "../../../store/appSlice";
+import generatePushNotificationsToken from "../../../utils/pushNotifications";
+import {
+  Subscription,
+  addNotificationReceivedListener,
+  addNotificationResponseReceivedListener,
+  removeNotificationSubscription,
+} from "expo-notifications";
+import { AxiosError } from "axios";
 
 type DashboardShopRootList = {
   "shop-create-order": undefined;
@@ -15,8 +23,46 @@ type DashboardShopRootList = {
 };
 
 const DashboardShopRoot = () => {
+  const dispatch = useDispatch();
+  const notificationListener = useRef<Subscription>();
+  const responseListener = useRef<Subscription>();
   const DashboardNavigator = createBottomTabNavigator<DashboardShopRootList>();
   const user = useSelector((state: RootState) => state.auth.user);
+
+  const firebaseToken = useSelector((state: RootState) => state.app.firebaseToken);
+  useEffect(() => {
+    console.log({ firebaseToken });
+
+    if (!firebaseToken) {
+      generatePushNotificationsToken().then((token) => {
+        if (!token) return;
+        console.log("hello ");
+        firebaseService
+          .updateShopToken({
+            shopId: user!.id,
+            notificationToken: token,
+          })
+          .then((res) => console.log(res))
+          .catch((err: AxiosError) => console.log(err.response?.data));
+
+        dispatch(setFirebaseToken({ firebaseToken: token }));
+      });
+    }
+
+    notificationListener.current = addNotificationReceivedListener((notification) => {
+      console.log(notification);
+    });
+
+    responseListener.current = addNotificationResponseReceivedListener((response) => {
+      console.log({ response });
+    });
+
+    return () => {
+      removeNotificationSubscription(notificationListener.current as Subscription);
+      removeNotificationSubscription(responseListener.current as Subscription);
+    };
+  }, [firebaseToken]);
+
   useEffect(() => {
     const removeListener = firebaseService.listenForOrders(user!.id, user!.role);
     return () => {

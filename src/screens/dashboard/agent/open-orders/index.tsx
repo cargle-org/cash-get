@@ -20,11 +20,12 @@ const AgentOpenOrders = ({ navigation }: NativeStackScreenProps<OpenOrdersRootLi
   return (
     <View style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
       <FlatList
-        style={{ backgroundColor: theme.colors["dark-100"], paddingVertical: 32, paddingHorizontal: 16 }}
+        style={{ backgroundColor: theme.colors["dark-100"], paddingHorizontal: 16, flex: 1 }}
         contentContainerStyle={{
-          display: "flex",
           gap: 12,
+          flex: 1,
         }}
+        contentInset={{ bottom: 100 }}
         data={orders}
         renderItem={({ item }) => (
           <SingleOrder

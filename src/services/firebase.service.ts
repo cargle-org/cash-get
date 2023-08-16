@@ -40,7 +40,7 @@ const listenForOrders = (userId: string, role: UserEnum) => {
       allOrders.push(childSnapshot.val());
     });
     // allOrders.sort((a, b) => (new Date(a.deliveryPeriod).getTime() < new Date(b.deliveryPeriod).getTime() ? -1 : 1));
-    const sortedOrders = allOrders.slice().sort((a, b) => new Date(a.deliveryPeriod).getTime() - new Date(b.deliveryPeriod).getTime());
+    const sortedOrders = allOrders.slice().sort((a, b) => parseInt(b.id) - parseInt(a.id));
     if (role === UserEnum.AGENT) {
       const activeOrders = sortedOrders.filter((order) => order.agentId === userId && order.status === orderStatusEnum.IN_PROGRESS);
       const openOrders = sortedOrders.filter((order) => order.status === orderStatusEnum.CREATED);
@@ -70,13 +70,13 @@ const listenForOrders = (userId: string, role: UserEnum) => {
   };
 };
 
-const updateShopToken = async (payload: { shopId: string; firebaseToken: string }): Promise<IResponse<IUser>> =>
+const updateShopToken = async (payload: { shopId: string; notificationToken: string }): Promise<IResponse<IUser>> =>
   https.post({
     url: `${BASE_URL}/shop/update-notification-token/${payload.shopId}`,
     body: JSON.stringify(payload),
   });
 
-const updateAgentToken = async (payload: { agentId: string; firebaseToken: string }): Promise<IResponse<IUser>> =>
+const updateAgentToken = async (payload: { agentId: string; notificationToken: string }): Promise<IResponse<IUser>> =>
   https.post({
     url: `${BASE_URL}/user/update-notification-token/${payload.agentId}`,
     body: JSON.stringify(payload),

@@ -7,7 +7,6 @@ import { store } from "../store";
 import { RootState } from "../store/appSlice";
 import { BASE_URL } from "@env";
 
-console.log({ BASE_URL });
 class HttpFacade {
   private http;
 
