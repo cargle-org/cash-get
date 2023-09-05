@@ -40,6 +40,7 @@ const listenForOrders = (userId: string, role: UserEnum) => {
       allOrders.push(childSnapshot.val());
     });
     // allOrders.sort((a, b) => (new Date(a.deliveryPeriod).getTime() < new Date(b.deliveryPeriod).getTime() ? -1 : 1));
+    // console.log(allOrders);
     const sortedOrders = allOrders.slice().sort((a, b) => parseInt(b.id) - parseInt(a.id));
     if (role === UserEnum.AGENT) {
       const activeOrders = sortedOrders.filter((order) => order.agentId === userId && order.status === orderStatusEnum.IN_PROGRESS);

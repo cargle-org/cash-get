@@ -36,16 +36,16 @@ const DashboardShopRoot = () => {
     if (!firebaseToken) {
       generatePushNotificationsToken().then((token) => {
         if (!token) return;
-        console.log("hello ");
         firebaseService
           .updateShopToken({
             shopId: user!.id,
             notificationToken: token,
           })
-          .then((res) => console.log(res))
+          .then((res) => {
+            console.log(res);
+            dispatch(setFirebaseToken({ firebaseToken: token }));
+          })
           .catch((err: AxiosError) => console.log(err.response?.data));
-
-        dispatch(setFirebaseToken({ firebaseToken: token }));
       });
     }
 

@@ -9,6 +9,13 @@ import { useEffect, useRef } from "react";
 export default function App() {
   const [fontLoaded] = useFonts({});
 
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
   if (!fontLoaded) {
     return <Text>Loading...</Text>;
   }
