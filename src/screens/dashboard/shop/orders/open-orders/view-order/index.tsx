@@ -13,7 +13,7 @@ import { RootState } from "../../../../../../store/appSlice";
 import { theme } from "../../../../../../utils/theme";
 import OrderAppBar from "../../../../components/OrderAppBar";
 import { nairaCurrencyFormatter } from "../../../../../../utils/misc";
-import { IUser } from "../../../../../../services/types";
+import { IUser, OrderStatusEnum } from "../../../../../../services/types";
 // import Clipboard from "@react-native-clipboard/clipboard";
 
 const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootList>) => {
@@ -60,21 +60,10 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootL
               <Icon name="store" color={theme.colors["dark-100"]} size={50} />
             </View>
             <View style={styles.orderPrimaryDetailsContainer}>
-              <Text style={styles.orderCardAmount}>{nairaCurrencyFormatter(data?.data?.amount || 0)}</Text>
+              <Text style={styles.orderCardAmount}>{nairaCurrencyFormatter(data?.data?.remainingAmount || 0)}</Text>
+              <Text style={styles.orderCardRemainingAmount}>({nairaCurrencyFormatter(data?.data?.amount || 0)})</Text>
               <Text style={styles.orderCardAddress}>{data?.data?.address}</Text>
             </View>
-            {data?.data?.agent && (
-              <>
-                <Divider />
-                <View style={styles.orderCardAgentSectionContainer}>
-                  <Avatar image={{ uri: "https://mui.com/static/images/avatar/1.jpg" }} />
-                  <View style={styles.orderCardAgentSectionContainer2}>
-                    <Text style={styles.orderCardAgentName}>{(data.data.agent as IUser).name}</Text>
-                    <Text style={styles.orderCardAgentPhoneNo}>{(data.data.agent as IUser).phoneNo}</Text>
-                  </View>
-                </View>
-              </>
-            )}
             <Divider />
             <View style={styles.orderCardTimeContainer}>
               <Text style={styles.orderCardTimeText1}>Pick up before</Text>
@@ -98,7 +87,14 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootL
           </View>
           <Divider />
           <View style={styles.orderCardSubmitAgentKeyContainer}>
-            <Button onPress={() => deleteOrder()} color={"red"} tintColor="white" style={{ paddingVertical: 10 }} title="Delete Order" />
+            <Button
+              onPress={() => deleteOrder()}
+              color={"red"}
+              tintColor="white"
+              style={{ paddingVertical: 10 }}
+              title="Delete Order"
+              disabled={data?.data?.status !== OrderStatusEnum.CREATED}
+            />
           </View>
         </ScrollView>
       )}
@@ -167,6 +163,11 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: "500",
     color: theme.colors["dark-400"],
+  },
+  orderCardRemainingAmount: {
+    fontSize: 20,
+    fontWeight: "400",
+    color: theme.colors["dark-300"],
   },
   orderCardAddress: {
     fontSize: 24,

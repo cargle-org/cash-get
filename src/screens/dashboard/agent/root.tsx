@@ -63,10 +63,12 @@ const DashboardAgentRoot = () => {
   }, [firebaseToken]);
 
   useEffect(() => {
-    const removeListener = firebaseService.listenForOrders(user!.id, user!.role);
-    return () => {
-      removeListener();
-    };
+    const removeOrderListener = firebaseService.listenForOrders(user!.id, user!.role);
+    const removeOrderCollectionsListerner = firebaseService.listenForOrderCollections(user!.id);
+    // return () => {
+    //   removeOrderListener();
+    //   removeOrderCollectionsListerner();
+    // };
   }, []);
   return (
     <DashboardAgentNavigator.Navigator tabBar={(props) => <CustomTabBar {...props} />}>

@@ -21,34 +21,14 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
   const [successMsg, setSuccessMsg] = useState("");
 
   const queryClient = useQueryClient();
-  const orderId = (route.params as any)?.orderId;
+  const orderCollectionId = (route.params as any)?.orderCollectionId;
   const mutation = useMutation({
     mutationFn: orderApi.confirmShopKey,
     onSuccess: ({ message, status, data }) => {
-      queryClient.invalidateQueries(orderId);
+      queryClient.invalidateQueries(orderCollectionId);
       setSuccessMsg(message);
       setTimeout(() => {
         setSuccessMsg("");
-      }, 3000);
-    },
-    onError: (error: AxiosError) => {
-      console.log(error.response?.data);
-      setErrorMsg((error.response?.data as any).message || "Error Encountered");
-      setTimeout(() => {
-        setErrorMsg("");
-      }, 3000);
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: orderApi.deleteOrder,
-    onSuccess: ({ message, status, data }) => {
-      queryClient.invalidateQueries(orderId);
-      setSuccessMsg(message);
-      queryClient.invalidateQueries(["orders", orderId]);
-      setTimeout(() => {
-        setSuccessMsg("");
-        navigation.goBack();
       }, 3000);
     },
     onError: (error: AxiosError) => {
@@ -62,23 +42,20 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
 
   const confirmOrder = (key: string) => {
     mutation.mutate({
-      orderId: orderId,
+      orderCollectionId: orderCollectionId,
       shopKey: key,
     });
   };
 
-  const deleteOrder = () => {
-    deleteMutation.mutate({ orderId });
-  };
-  const { data, error, isFetching } = useQuery(["orders", orderId], () => orderApi.getSingleOrder(orderId));
-  console.log();
+  const { data, error, isFetching } = useQuery(["orders", orderCollectionId], () => orderApi.getSingleOrderCollection(orderCollectionId));
+  console.log(data);
   // useEffect(() => {
   //   queryClient.invalidateQueries([orderId]);
   //   console.log(data);
   // }, [data]);
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors["dark-100"] }}>
-      <OrderAppBar navigate={navigation} orderId={orderId} />
+      <OrderAppBar navigate={navigation} orderId={data?.data?.order?.id} />
       {isFetching ? (
         <Text>Loading ...</Text>
       ) : (
@@ -89,7 +66,7 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
             </View>
             <View style={styles.orderPrimaryDetailsContainer}>
               <Text style={styles.orderCardAmount}>{nairaCurrencyFormatter(data?.data?.amount || 0)}</Text>
-              <Text style={styles.orderCardAddress}>{data?.data?.address}</Text>
+              {/* <Text style={styles.orderCardAddress}>{data?.data?.order.address}</Text> */}
             </View>
             {data?.data?.agent && (
               <>
@@ -97,8 +74,8 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
                 <View style={styles.orderCardAgentSectionContainer}>
                   <Avatar image={{ uri: "https://mui.com/static/images/avatar/1.jpg" }} />
                   <View style={styles.orderCardAgentSectionContainer2}>
-                    <Text style={styles.orderCardAgentName}>{(data.data.agent as IUser).name}</Text>
-                    <Text style={styles.orderCardAgentPhoneNo}>{(data.data.agent as IUser).phoneNo}</Text>
+                    <Text style={styles.orderCardAgentName}>{(data.data?.agent as IUser).name}</Text>
+                    <Text style={styles.orderCardAgentPhoneNo}>{(data.data?.agent as IUser).phoneNo}</Text>
                   </View>
                 </View>
               </>
@@ -112,15 +89,15 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
             <View style={styles.orderCardItemsContainer}>
               <View style={styles.orderCardItemsItem}>
                 <Text style={styles.orderCardItemsText1}>Contact Name :</Text>
-                <Text style={styles.orderCardItemsText2}>{data?.data?.contactName}</Text>
+                <Text style={styles.orderCardItemsText2}>{data?.data?.order?.contactName}</Text>
               </View>
               <View style={styles.orderCardItemsItem}>
                 <Text style={styles.orderCardItemsText1}>Contact No:</Text>
-                <Text style={styles.orderCardItemsText2}>{data?.data?.contactNumber}</Text>
+                <Text style={styles.orderCardItemsText2}>{data?.data?.order?.contactNumber}</Text>
               </View>
               <View style={{ ...styles.orderCardItemsItem, flexDirection: "column" }}>
                 <Text style={styles.orderCardItemsText1}>Extra Info:</Text>
-                {data?.data?.extraInfo && <Text style={styles.orderCardItemsText2}>{data?.data?.extraInfo}</Text>}
+                {data?.data?.order?.extraInfo && <Text style={styles.orderCardItemsText2}>{data?.data?.order?.extraInfo}</Text>}
               </View>
             </View>
           </View>
@@ -149,7 +126,7 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
               editable={!data?.data?.shopConfirmed}
             />
             <Button
-              disabled={data?.data?.shopConfirmed || shopKey.length < 12}
+              disabled={data?.data?.shopConfirmed || shopKey.length < 7}
               onPress={() => confirmOrder(shopKey)}
               color={theme.colors["dark-500"]}
               style={{ paddingVertical: 10 }}

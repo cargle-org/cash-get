@@ -22,11 +22,11 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
   const [successMsg, setSuccessMsg] = useState("");
 
   const queryClient = useQueryClient();
-  const orderId = (route.params as any)?.orderId;
+  const orderCollectionId = (route.params as any)?.orderCollectionId;
   const mutation = useMutation({
     mutationFn: orderApi.confirmAgentKey,
     onSuccess: ({ message, status, data }) => {
-      queryClient.invalidateQueries(orderId);
+      queryClient.invalidateQueries(orderCollectionId);
       setSuccessMsg(message);
       setTimeout(() => {
         setSuccessMsg("");
@@ -44,9 +44,9 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
   const deleteMutation = useMutation({
     mutationFn: orderApi.deleteOrder,
     onSuccess: ({ message, status, data }) => {
-      queryClient.invalidateQueries(orderId);
+      queryClient.invalidateQueries(orderCollectionId);
       setSuccessMsg(message);
-      queryClient.invalidateQueries(["orders", orderId]);
+      queryClient.invalidateQueries(["orders", orderCollectionId]);
       setTimeout(() => {
         setSuccessMsg("");
         navigation.goBack();
@@ -63,16 +63,16 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
 
   const confirmOrder = (key: string) => {
     mutation.mutate({
-      orderId: orderId,
+      orderCollectionId: orderCollectionId,
       agentKey: key,
     });
   };
 
   const deleteOrder = () => {
-    deleteMutation.mutate({ orderId });
+    deleteMutation.mutate({ orderId: orderCollectionId });
   };
 
-  const { data, error, isFetching } = useQuery(["orders", orderId], () => orderApi.getSingleOrder(orderId));
+  const { data, error, isFetching } = useQuery(["orderCollections", orderCollectionId], () => orderApi.getSingleOrderCollection(orderCollectionId));
   // console.log(data);
   // useEffect(() => {
   //   queryClient.invalidateQueries([orderId]);
@@ -80,7 +80,7 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
   // }, [data]);
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors["dark-100"] }}>
-      <OrderAppBar navigate={navigation} orderId={orderId} />
+      <OrderAppBar navigate={navigation} orderId={orderCollectionId} />
       {isFetching ? (
         <Text>Loading ...</Text>
       ) : (
@@ -91,7 +91,7 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
             </View>
             <View style={styles.orderPrimaryDetailsContainer}>
               <Text style={styles.orderCardAmount}>{nairaCurrencyFormatter(data?.data?.amount || 0)}</Text>
-              <Text style={styles.orderCardAddress}>{data?.data?.address}</Text>
+              <Text style={styles.orderCardAddress}>{data?.data?.order.address}</Text>
             </View>
             {data?.data?.agent && (
               <>
@@ -114,15 +114,15 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
             <View style={styles.orderCardItemsContainer}>
               <View style={styles.orderCardItemsItem}>
                 <Text style={styles.orderCardItemsText1}>Contact Name :</Text>
-                <Text style={styles.orderCardItemsText2}>{data?.data?.contactName}</Text>
+                <Text style={styles.orderCardItemsText2}>{data?.data?.order.contactName}</Text>
               </View>
               <View style={styles.orderCardItemsItem}>
                 <Text style={styles.orderCardItemsText1}>Contact No:</Text>
-                <Text style={styles.orderCardItemsText2}>{data?.data?.contactNumber}</Text>
+                <Text style={styles.orderCardItemsText2}>{data?.data?.order.contactNumber}</Text>
               </View>
               <View style={{ ...styles.orderCardItemsItem, flexDirection: "column" }}>
                 <Text style={styles.orderCardItemsText1}>Extra Info:</Text>
-                {data?.data?.extraInfo && <Text style={styles.orderCardItemsText2}>{data?.data?.extraInfo}</Text>}
+                {data?.data?.order.extraInfo && <Text style={styles.orderCardItemsText2}>{data?.data?.order.extraInfo}</Text>}
               </View>
             </View>
           </View>
@@ -151,16 +151,12 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
               editable={!data?.data?.agentConfirmed}
             />
             <Button
-              disabled={data?.data?.agentConfirmed || agentKey.length < 12}
+              disabled={data?.data?.agentConfirmed || agentKey.length < 7}
               onPress={() => confirmOrder(agentKey)}
               color={theme.colors["dark-500"]}
               style={{ paddingVertical: 10 }}
               title="Submit Key"
             />
-          </View>
-          <Divider />
-          <View style={styles.orderCardSubmitAgentKeyContainer}>
-            <Button onPress={() => deleteOrder()} color={"red"} tintColor="white" style={{ paddingVertical: 10 }} title="Cancel Order" />
           </View>
         </ScrollView>
       )}

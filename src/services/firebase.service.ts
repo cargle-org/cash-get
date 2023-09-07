@@ -4,8 +4,8 @@ import "firebase/compat/analytics";
 import "firebase/compat/messaging";
 import "firebase/compat/database";
 import { store } from "../store";
-import { getOrders } from "../store/orderSlice";
-import { IOrderListItem, IResponse, IUser, UserEnum, orderStatusEnum } from "./types";
+import { getAgentOrders, getShopOrders } from "../store/orderSlice";
+import { IOrderListItem, IResponse, IUser, UserEnum, OrderStatusEnum, IOrderCollectionListItem, CollectionProgressStatusEnum } from "./types";
 import {
   BASE_URL,
   FIREBASE_API_KEY,
@@ -17,6 +17,7 @@ import {
   FIREBASE_STORAGE_BUCKET,
 } from "@env";
 import https from "../utils/https";
+import { getOrderCollections } from "../store/orderCollectionSlice";
 
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,
@@ -43,22 +44,18 @@ const listenForOrders = (userId: string, role: UserEnum) => {
     // console.log(allOrders);
     const sortedOrders = allOrders.slice().sort((a, b) => parseInt(b.id) - parseInt(a.id));
     if (role === UserEnum.AGENT) {
-      const activeOrders = sortedOrders.filter((order) => order.agentId === userId && order.status === orderStatusEnum.IN_PROGRESS);
-      const openOrders = sortedOrders.filter((order) => order.status === orderStatusEnum.CREATED);
-      const closedOrders = sortedOrders.filter((order) => order.agentId === userId && order.status === orderStatusEnum.COMPLETED);
+      const openOrders = sortedOrders.filter((order) => order.remainingAmount !== 0);
       store.dispatch(
-        getOrders({
-          activeOrders,
+        getAgentOrders({
           openOrders,
-          closedOrders,
         })
       );
     } else {
-      const activeOrders = sortedOrders.filter((order) => order.shopId === userId && order.status === orderStatusEnum.IN_PROGRESS);
-      const openOrders = sortedOrders.filter((order) => order.shopId === userId && order.status === orderStatusEnum.CREATED);
-      const closedOrders = sortedOrders.filter((order) => order.shopId === userId && order.status === orderStatusEnum.COMPLETED);
+      const activeOrders = sortedOrders.filter((order) => order.shopId === userId && order.status === OrderStatusEnum.IN_PROGRESS);
+      const openOrders = sortedOrders.filter((order) => order.shopId === userId && order.status === OrderStatusEnum.CREATED);
+      const closedOrders = sortedOrders.filter((order) => order.shopId === userId && order.status === OrderStatusEnum.COMPLETED);
       store.dispatch(
-        getOrders({
+        getShopOrders({
           activeOrders,
           openOrders,
           closedOrders,
@@ -68,6 +65,32 @@ const listenForOrders = (userId: string, role: UserEnum) => {
   });
   return () => {
     orderRef.off("value", listener);
+  };
+};
+
+const listenForOrderCollections = (userId: string) => {
+  const orderCollectionRef = db.ref("orderCollection");
+  const listener = orderCollectionRef.on("value", (snapshot) => {
+    const allOrderCollection: IOrderCollectionListItem[] = [];
+    snapshot.forEach((childSnapshot) => {
+      allOrderCollection.push(childSnapshot.val());
+    });
+    const sortedOrderCollection = allOrderCollection.slice().sort((a, b) => parseInt(b.id) - parseInt(a.id));
+    const activeOrderCollections = sortedOrderCollection.filter(
+      (orderCollection) => orderCollection.collectionProgressStatus === CollectionProgressStatusEnum.STARTED && orderCollection.agentId === userId
+    );
+    const closedOrderCollections = sortedOrderCollection.filter(
+      (orderCollection) => orderCollection.collectionProgressStatus === CollectionProgressStatusEnum.COMPLETED && orderCollection.agentId === userId
+    );
+    store.dispatch(
+      getOrderCollections({
+        closedOrderCollections,
+        activeOrderCollections,
+      })
+    );
+  });
+  return () => {
+    orderCollectionRef.off("value", listener);
   };
 };
 
@@ -83,19 +106,9 @@ const updateAgentToken = async (payload: { agentId: string; notificationToken: s
     body: JSON.stringify(payload),
   });
 
-// const listenForMessages = (ticketRef: string) => {
-//   const ticketMessageRef = db.ref(`ticket/${ticketRef}/messages`);
-//   ticketMessageRef.on("value", (snapshot) => {
-//     const allMessages: any[] = [];
-//     snapshot.forEach((childSnapshot) => {
-//       allMessages.push(childSnapshot.val());
-//     });
-//     store.dispatch(getMessages(allMessages));
-//   });
-// };
-
 export const firebaseService = {
   listenForOrders,
+  listenForOrderCollections,
   updateAgentToken,
   updateShopToken,
 };

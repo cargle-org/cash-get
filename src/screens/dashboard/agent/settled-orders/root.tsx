@@ -5,7 +5,7 @@ import ViewClosedOrdersSingleOrder from "./view-order";
 
 export type SettledOrdersRootList = {
   "agent-settled-orders-all": undefined;
-  "agent-settled-orders-single": { orderId: string };
+  "agent-settled-orders-single": { orderCollectionId: string };
 };
 
 const AgentSettledOrdersRoot = () => {

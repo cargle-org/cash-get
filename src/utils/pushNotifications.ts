@@ -30,7 +30,7 @@ const generatePushNotificationsToken = async (): Promise<string | undefined> => 
     // });
     console.log(token);
   } else {
-    alert("Must use physical device for Push");
+    alert("Must use physical device for Push Notification");
   }
 
   if (Platform.OS === "android") {

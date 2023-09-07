@@ -1,11 +1,11 @@
-import { Icon, Text } from "@react-native-material/core";
 import React from "react";
+import { Divider, Icon, Text } from "@react-native-material/core";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { nairaCurrencyFormatter } from "../../../../../utils/misc";
 import { theme } from "../../../../../utils/theme";
 import moment from "moment";
 
-const SingleOrder = ({ orderId, amount, status, onPress, time }: any) => {
+const AgentSingleOrderCollection = ({ orderId, amount, status, onPress, time, shopName, shopAddress }: any) => {
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.orderSingleCardContainer}>
@@ -14,7 +14,7 @@ const SingleOrder = ({ orderId, amount, status, onPress, time }: any) => {
             <Text style={statusStyle(status).statusText}>{status}</Text>
           </View>
           <View style={styles.orderSingleCardTimeContainer}>
-            <Text style={styles.orderSingleCardTimeText}>{moment(time).toNow(true)}</Text>
+            <Text style={styles.orderSingleCardTimeText}>{moment(time).toNow()}</Text>
           </View>
         </View>
         <View style={styles.orderSingleCardBodyContainer}>
@@ -24,6 +24,17 @@ const SingleOrder = ({ orderId, amount, status, onPress, time }: any) => {
               <Text style={styles.orderSingleCardShopSectionAvatarText}>{`#${orderId}`}</Text>
             </View>
             <Text style={styles.orderSingleCardShopSectionAmount}>{nairaCurrencyFormatter(amount)}</Text>
+          </View>
+          <Divider />
+          <View style={styles.orderSingleCardAgentSectionContainer}>
+            <View style={styles.orderSingleCardAgentSectionItemContainer}>
+              <Text style={styles.orderSingleCardAgentSectionLabel}>Shop Name</Text>
+              <Text style={styles.orderSingleCardAgentSectionText}>{shopName}</Text>
+            </View>
+            <View style={styles.orderSingleCardAgentSectionItemContainer}>
+              <Text style={styles.orderSingleCardAgentSectionLabel}>Shop Addresss</Text>
+              <Text style={styles.orderSingleCardAgentSectionText}>{shopAddress}</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -92,7 +103,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  orderSingleCardAgentSectionItemContainer: {},
+  orderSingleCardAgentSectionItemContainer: {
+    maxWidth: 150,
+  },
   orderSingleCardAgentSectionLabel: {
     fontSize: 16,
     color: theme.colors["dark-200"],
@@ -118,4 +131,4 @@ const statusStyle = (status: string) =>
     },
   });
 
-export default SingleOrder;
+export default AgentSingleOrderCollection;

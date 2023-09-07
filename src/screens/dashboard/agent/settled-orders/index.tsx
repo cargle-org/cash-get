@@ -4,18 +4,19 @@ import { FlatList, SafeAreaView, ScrollView, StatusBar, View } from "react-nativ
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../store/appSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { IOrderListItem } from "../../../../services/types";
+import { IOrderCollectionListItem, IOrderListItem } from "../../../../services/types";
 import { DashboardAgentRootList } from "../root";
 import SingleOrder from "../components/single-order";
 import { SettledOrdersRootList } from "./root";
 import DashboardAppBar from "../../components/DashboardAppBar";
 import { theme } from "../../../../utils/theme";
+import AgentSingleOrderCollection from "../components/single-order-collection";
 
 const AgentSettledOrders = ({ navigation }: NativeStackScreenProps<SettledOrdersRootList>) => {
-  const orders = useSelector((state: RootState) => state.order.closedOrders);
-  const handlePress = (item: IOrderListItem) => {
+  const orderCollections = useSelector((state: RootState) => state.orderCollection.closedOrderCollections);
+  const handlePress = (item: IOrderCollectionListItem) => {
     // Handle press event for a list item
-    navigation.navigate("agent-settled-orders-single", { orderId: item.id });
+    navigation.navigate("agent-settled-orders-single", { orderCollectionId: item.id });
   };
   return (
     <View style={{ flex: 1 }}>
@@ -25,13 +26,13 @@ const AgentSettledOrders = ({ navigation }: NativeStackScreenProps<SettledOrders
           display: "flex",
           gap: 12,
         }}
-        data={orders}
+        data={orderCollections}
         renderItem={({ item }) => (
-          <SingleOrder
+          <AgentSingleOrderCollection
             orderId={item.id}
             time={item.deliveryPeriod}
             amount={item.amount}
-            status={item.status}
+            status={item.collectionProgressStatus}
             agentName={item.agentName}
             agentId={item.agentId}
             agentNo={item.agentNo}

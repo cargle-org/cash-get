@@ -20,3 +20,8 @@ export interface IResponse<D> {
   code?: number;
   message?: string;
 }
+
+export enum CollectionStatusEnum {
+  PARTIAL = "PARTIAL",
+  FULL = "FULL",
+}

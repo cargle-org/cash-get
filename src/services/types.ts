@@ -20,10 +20,21 @@ export enum UserEnum {
   AGENT = "AGENT",
 }
 
-export enum orderStatusEnum {
+export enum OrderStatusEnum {
   CREATED = "CREATED",
   IN_PROGRESS = "IN_PROGRESS",
   COMPLETED = "COMPLETED",
+  NOT_HANDLED = "NOT_HANDLED",
+}
+
+export enum CollectionProgressStatusEnum {
+  STARTED = "STARTED",
+  COMPLETED = "COMPLETED",
+}
+
+export enum CollectionStatusEnum {
+  PARTIAL = "PARTIAL",
+  FULL = "FULL",
 }
 
 export interface IUser {
@@ -45,14 +56,27 @@ export interface IOrder {
   contactName: string;
   contactNumber: string;
   extraInfo: string;
-  agent: IUser | string;
   shop: IUser | string;
-  agentConfirmed: boolean;
-  agentKey: string;
-  shopConfirmed: boolean;
+  orderCollections: IOrderCollection[];
   deliveryPeriod: Date;
+  status: OrderStatusEnum;
+  remainingAmount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IOrderCollection {
+  id: string;
+  amount: number;
+  agent: IUser;
+  order: IOrder;
+  deliveryPeriod: Date;
+  collectionStatus: CollectionStatusEnum;
+  collectionProgressStatus: CollectionProgressStatusEnum;
   shopKey: string;
-  status: orderStatusEnum;
+  shopConfirmed: boolean;
+  agentKey: string;
+  agentConfirmed: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,11 +91,23 @@ export interface ICreateOrderPayload {
 
 export interface IOrderListItem {
   id: string;
-  amount: string;
-  status: orderStatusEnum;
-  agentName: string;
+  amount: number;
+  status: OrderStatusEnum;
+  remainingAmount: number;
   shopId: string;
-  agentId: string;
-  agentNo: string;
   deliveryPeriod: string;
+}
+export interface IOrderCollectionListItem {
+  agentId: string;
+  agentName: string;
+  agentNo: string;
+  amount: number;
+  collectionProgressStatus: CollectionProgressStatusEnum;
+  collectionStatus: CollectionStatusEnum;
+  deliveryPeriod: string;
+  id: string;
+  shopId: string;
+  shopName: string;
+  shopAddress: string;
+  orderId: string;
 }

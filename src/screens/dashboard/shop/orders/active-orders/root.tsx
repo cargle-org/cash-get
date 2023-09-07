@@ -5,7 +5,7 @@ import ViewOpenOrdersSingleOrder from "./view-order";
 
 export type ActiveOrdersRootList = {
   "shop-active-orders-all": undefined;
-  "shop-active-orders-single": { orderId: string };
+  "shop-active-orders-single": { orderCollectionId: string };
 };
 
 const ShopActiveOrdersRoot = () => {

@@ -4,18 +4,20 @@ import { FlatList, SafeAreaView, ScrollView, StatusBar, View } from "react-nativ
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../store/appSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { IOrderListItem } from "../../../../services/types";
+import { IOrderCollectionListItem, IOrderListItem } from "../../../../services/types";
 import { DashboardAgentRootList } from "../root";
 import SingleOrder from "../components/single-order";
 import { ActiveOrdersRootList } from "./root";
 import DashboardAppBar from "../../components/DashboardAppBar";
 import { theme } from "../../../../utils/theme";
+import AgentSingleOrderCollection from "../components/single-order-collection";
 
 const AgentActiveOrders = ({ navigation }: NativeStackScreenProps<ActiveOrdersRootList>) => {
-  const orders = useSelector((state: RootState) => state.order.activeOrders);
-  const handlePress = (item: IOrderListItem) => {
+  const orderCollections = useSelector((state: RootState) => state.orderCollection.activeOrderCollections);
+  console.log(orderCollections);
+  const handlePress = (item: IOrderCollectionListItem) => {
     // Handle press event for a list item
-    navigation.navigate("agent-active-orders-single", { orderId: item.id });
+    navigation.navigate("agent-active-orders-single", { orderCollectionId: item.id });
   };
   return (
     <View style={{ flex: 1 }}>
@@ -26,16 +28,16 @@ const AgentActiveOrders = ({ navigation }: NativeStackScreenProps<ActiveOrdersRo
           display: "flex",
           gap: 12,
         }}
-        data={orders}
+        data={orderCollections}
         renderItem={({ item }) => (
-          <SingleOrder
+          <AgentSingleOrderCollection
             time={item.deliveryPeriod}
-            orderId={item.id}
+            orderId={item.orderId}
             amount={item.amount}
-            status={item.status}
-            agentName={item.agentName}
-            agentId={item.agentId}
-            agentNo={item.agentNo}
+            status={item.collectionStatus}
+            shopName={item.shopName}
+            shopId={item.shopId}
+            shopAddress={item.shopAddress}
             onPress={() => handlePress(item)}
           />
         )}

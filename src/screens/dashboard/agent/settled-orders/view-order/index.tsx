@@ -23,14 +23,14 @@ const ViewClosedOrdersSingleOrder = (props: NativeStackScreenProps<SettledOrders
   const [successMsg, setSuccessMsg] = useState("");
   const user = useSelector((state: RootState) => state.auth.user);
   const queryClient = useQueryClient();
-  const orderId = (route.params as any)?.orderId;
+  const orderCollectionId = (route.params as any)?.orderCollectionId;
 
   const acceptMutation = useMutation({
     mutationFn: orderApi.acceptOrder,
     onSuccess: ({ message, status, data }) => {
-      queryClient.invalidateQueries(orderId);
+      queryClient.invalidateQueries(orderCollectionId);
       setSuccessMsg(message);
-      queryClient.invalidateQueries(["orders", orderId]);
+      queryClient.invalidateQueries(["orderCollection", orderCollectionId]);
       setTimeout(() => {
         setSuccessMsg("");
         navigation.goBack();
@@ -45,13 +45,10 @@ const ViewClosedOrdersSingleOrder = (props: NativeStackScreenProps<SettledOrders
     },
   });
 
-  const acceptOrder = () => {
-    acceptMutation.mutate({ agentId: user?.id || "", orderId, useSpikk });
-  };
-  const { data, error, isFetching } = useQuery(["orders", orderId], () => orderApi.getSingleOrder(orderId));
+  const { data, error, isFetching } = useQuery(["orderCollection", orderCollectionId], () => orderApi.getSingleOrderCollection(orderCollectionId));
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors["dark-100"] }}>
-      <OrderAppBar navigate={navigation} orderId={orderId} />
+      <OrderAppBar navigate={navigation} orderId={data?.data?.order?.id} />
       {isFetching ? (
         <Text>Loading ...</Text>
       ) : (
@@ -62,7 +59,7 @@ const ViewClosedOrdersSingleOrder = (props: NativeStackScreenProps<SettledOrders
             </View>
             <View style={styles.orderPrimaryDetailsContainer}>
               <Text style={styles.orderCardAmount}>{nairaCurrencyFormatter(data?.data?.amount || 0)}</Text>
-              <Text style={styles.orderCardAddress}>{data?.data?.address}</Text>
+              <Text style={styles.orderCardAddress}>{data?.data?.order?.address}</Text>
             </View>
             {data?.data?.agent && (
               <>
@@ -85,35 +82,19 @@ const ViewClosedOrdersSingleOrder = (props: NativeStackScreenProps<SettledOrders
             <View style={styles.orderCardItemsContainer}>
               <View style={styles.orderCardItemsItem}>
                 <Text style={styles.orderCardItemsText1}>Contact Name :</Text>
-                <Text style={styles.orderCardItemsText2}>{data?.data?.contactName}</Text>
+                <Text style={styles.orderCardItemsText2}>{data?.data?.order?.contactName}</Text>
               </View>
               <View style={styles.orderCardItemsItem}>
                 <Text style={styles.orderCardItemsText1}>Contact No:</Text>
-                <Text style={styles.orderCardItemsText2}>{data?.data?.contactNumber}</Text>
+                <Text style={styles.orderCardItemsText2}>{data?.data?.order?.contactNumber}</Text>
               </View>
               <View style={{ ...styles.orderCardItemsItem, flexDirection: "column" }}>
                 <Text style={styles.orderCardItemsText1}>Extra Info:</Text>
-                {data?.data?.extraInfo && <Text style={styles.orderCardItemsText2}>{data?.data?.extraInfo}</Text>}
+                {data?.data?.order?.extraInfo && <Text style={styles.orderCardItemsText2}>{data?.data?.order?.extraInfo}</Text>}
               </View>
             </View>
           </View>
           <Divider />
-          <View style={styles.orderCardSubmitAgentKeyContainer}>
-            <Flex direction="row" justify="between" mb={20}>
-              <Text color={theme.colors["dark-500"]} variant="h5" style={{ fontWeight: "600" }}>
-                {useSpikk ? "Use Spikk" : "Handle Yourself"}
-              </Text>
-              <Switch
-                thumbColor={theme.colors["dark-500"]}
-                trackColor={{
-                  true: "#D5D5D5",
-                }}
-                value={useSpikk}
-                onValueChange={() => setUseSpikk(!useSpikk)}
-              />
-            </Flex>
-            <Button onPress={() => acceptOrder()} color={"blue"} tintColor="white" style={{ paddingVertical: 10 }} title="Accept Order" />
-          </View>
         </ScrollView>
       )}
       {errorMsg !== "" && (

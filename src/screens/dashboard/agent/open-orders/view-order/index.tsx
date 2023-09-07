@@ -14,6 +14,8 @@ import { IUser } from "../../../../../services/types";
 import { OpenOrdersRootList } from "../root";
 import { Switch } from "react-native-paper";
 import { RootState } from "../../../../../store/appSlice";
+import CheckBox from "react-native-check-box";
+import { CollectionStatusEnum } from "../../../../../utils/types";
 // import Clipboard from "@react-native-clipboard/clipboard";
 
 const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootList>) => {
@@ -21,6 +23,8 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootL
   const [useSpikk, setUseSpikk] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [customAmount, setCustomAmount] = useState(0);
+  const [partialMopUp, setPartialMopUp] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
   const queryClient = useQueryClient();
   const orderId = (route.params as any)?.orderId;
@@ -46,9 +50,25 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootL
   });
 
   const acceptOrder = () => {
-    acceptMutation.mutate({ agentId: user?.id || "", orderId, useSpikk });
+    if (!data?.data?.remainingAmount || customAmount > data.data.amount) {
+      setErrorMsg("MopUp amount cannot be more than remaining Amount");
+      return;
+    }
+    acceptMutation.mutate({
+      agentId: user?.id || "",
+      orderId,
+      useSpikk,
+      amount: customAmount,
+      collectionStatus: partialMopUp ? CollectionStatusEnum.PARTIAL : CollectionStatusEnum.FULL,
+    });
   };
   const { data, error, isFetching } = useQuery(["orders", orderId], () => orderApi.getSingleOrder(orderId));
+
+  useEffect(() => {
+    if (data?.data) {
+      setCustomAmount(data.data.remainingAmount);
+    }
+  }, [data]);
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors["dark-100"] }}>
       <OrderAppBar navigate={navigation} orderId={orderId} />
@@ -61,21 +81,10 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootL
               <Icon name="store" color={theme.colors["dark-100"]} size={50} />
             </View>
             <View style={styles.orderPrimaryDetailsContainer}>
-              <Text style={styles.orderCardAmount}>{nairaCurrencyFormatter(data?.data?.amount || 0)}</Text>
+              <Text style={styles.orderCardAmount}>{nairaCurrencyFormatter(data?.data?.remainingAmount || 0)}</Text>
+              <Text style={styles.orderCardRemainingAmount}>({nairaCurrencyFormatter(data?.data?.amount || 0)})</Text>
               <Text style={styles.orderCardAddress}>{data?.data?.address}</Text>
             </View>
-            {data?.data?.agent && (
-              <>
-                <Divider />
-                <View style={styles.orderCardAgentSectionContainer}>
-                  <Avatar image={{ uri: "https://mui.com/static/images/avatar/1.jpg" }} />
-                  <View style={styles.orderCardAgentSectionContainer2}>
-                    <Text style={styles.orderCardAgentName}>{(data.data.agent as IUser).name}</Text>
-                    <Text style={styles.orderCardAgentPhoneNo}>{(data.data.agent as IUser).phoneNo}</Text>
-                  </View>
-                </View>
-              </>
-            )}
             <Divider />
             <View style={styles.orderCardTimeContainer}>
               <Text style={styles.orderCardTimeText1}>Pick up before</Text>
@@ -100,6 +109,31 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootL
           <Divider />
           <View style={styles.orderCardSubmitAgentKeyContainer}>
             <Flex direction="row" justify="between" mb={20}>
+              <CheckBox
+                onClick={() => setPartialMopUp(!partialMopUp)}
+                isChecked={partialMopUp}
+                // style={styles.checkbox}
+                rightTextView={
+                  <Text color={theme.colors["dark-500"]} variant="h5" style={{ fontWeight: "600", marginLeft: 4 }}>
+                    Partial mop up
+                  </Text>
+                }
+              />
+            </Flex>
+            <TextInput
+              variant="outlined"
+              label="Enter Mop Up Amount"
+              onChangeText={(text) => setCustomAmount(parseFloat(text.substring(1).replaceAll(",", "") || "0"))}
+              value={nairaCurrencyFormatter(customAmount || 0)}
+              color={theme.colors["dark-500"]}
+              inputStyle={{ backgroundColor: theme.colors["dark-100"] }}
+              style={{ marginBottom: 16 }}
+              editable={partialMopUp}
+            />
+          </View>
+          <Divider />
+          <View style={styles.orderCardSubmitAgentKeyContainer}>
+            <Flex direction="row" justify="between" mb={20}>
               <Text color={theme.colors["dark-500"]} variant="h5" style={{ fontWeight: "600" }}>
                 {useSpikk ? "Use Spikk" : "Handle Yourself"}
               </Text>
@@ -112,7 +146,14 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<OpenOrdersRootL
                 onValueChange={() => setUseSpikk(!useSpikk)}
               />
             </Flex>
-            <Button onPress={() => acceptOrder()} color={"blue"} tintColor="white" style={{ paddingVertical: 10 }} title="Accept Order" />
+            <Button
+              loading={acceptMutation.isLoading}
+              onPress={() => acceptOrder()}
+              color={"blue"}
+              tintColor="white"
+              style={{ paddingVertical: 10 }}
+              title="Accept Order"
+            />
           </View>
         </ScrollView>
       )}
@@ -181,6 +222,11 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: "500",
     color: theme.colors["dark-400"],
+  },
+  orderCardRemainingAmount: {
+    fontSize: 20,
+    fontWeight: "400",
+    color: theme.colors["dark-300"],
   },
   orderCardAddress: {
     fontSize: 24,

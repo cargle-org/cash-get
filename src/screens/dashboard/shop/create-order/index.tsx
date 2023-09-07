@@ -68,7 +68,6 @@ const CreateOrder = (props: CreateOrderProps) => {
       extraInfo: "",
     },
     onSubmit: (values) => {
-      console.log(values);
       mutation.mutate({ shopId: shop?.id || "", body: { ...values, amount: parseFloat(values.amount) } });
     },
   });

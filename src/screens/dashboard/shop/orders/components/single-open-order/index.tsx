@@ -1,11 +1,12 @@
-import { Icon, Text } from "@react-native-material/core";
+import { Avatar, Flex, Icon, Pressable, Text } from "@react-native-material/core";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { nairaCurrencyFormatter } from "../../../../../utils/misc";
-import { theme } from "../../../../../utils/theme";
+import { nairaCurrencyFormatter } from "../../../../../../utils/misc";
+import { Divider } from "react-native-paper";
+import { theme } from "../../../../../../utils/theme";
 import moment from "moment";
 
-const SingleOrder = ({ orderId, amount, status, onPress, time }: any) => {
+const SingleOpenOrder = ({ orderId, amount, remainingAmount, status, onPress, time }: any) => {
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.orderSingleCardContainer}>
@@ -14,7 +15,7 @@ const SingleOrder = ({ orderId, amount, status, onPress, time }: any) => {
             <Text style={statusStyle(status).statusText}>{status}</Text>
           </View>
           <View style={styles.orderSingleCardTimeContainer}>
-            <Text style={styles.orderSingleCardTimeText}>{moment(time).toNow(true)}</Text>
+            <Text style={styles.orderSingleCardTimeText}>{moment(time).format("hh:mmA")}</Text>
           </View>
         </View>
         <View style={styles.orderSingleCardBodyContainer}>
@@ -23,11 +24,13 @@ const SingleOrder = ({ orderId, amount, status, onPress, time }: any) => {
               <Icon name="cart" size={40} />
               <Text style={styles.orderSingleCardShopSectionAvatarText}>{`#${orderId}`}</Text>
             </View>
-            <Text style={styles.orderSingleCardShopSectionAmount}>{nairaCurrencyFormatter(amount)}</Text>
+            <Flex items="end">
+              <Text style={styles.orderSingleCardShopSectionAmount}>{nairaCurrencyFormatter(remainingAmount)}</Text>
+              <Text style={styles.orderSingleCardShopSectionRemainingAmount}>({nairaCurrencyFormatter(amount)})</Text>
+            </Flex>
           </View>
         </View>
       </View>
-      <View></View>
     </TouchableOpacity>
   );
 };
@@ -86,6 +89,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: theme.colors["dark-400"],
   },
+  orderSingleCardShopSectionRemainingAmount: {
+    fontSize: 12,
+    fontWeight: "400",
+    color: theme.colors["dark-300"],
+  },
   orderSingleCardAgentSectionContainer: {
     padding: 16,
     flexDirection: "row",
@@ -118,4 +126,4 @@ const statusStyle = (status: string) =>
     },
   });
 
-export default SingleOrder;
+export default SingleOpenOrder;

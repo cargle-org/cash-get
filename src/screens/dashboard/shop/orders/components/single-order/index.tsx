@@ -1,50 +1,76 @@
-import { Avatar, Flex, Icon, Pressable, Text } from "@react-native-material/core";
-import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { nairaCurrencyFormatter } from "../../../../../../utils/misc";
-import { Divider } from "react-native-paper";
+import React, { useState } from "react";
 import { theme } from "../../../../../../utils/theme";
+import { Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Avatar, Box, Divider, Flex, Icon, Text } from "@react-native-material/core";
 import moment from "moment";
+import { nairaCurrencyFormatter } from "../../../../../../utils/misc";
+import { useQuery } from "react-query";
+import { orderApi } from "../../../../../../services/order.service";
+import { CollectionProgressStatusEnum, IOrderCollection, IOrderListItem } from "../../../../../../services/types";
 
-const SingleOrder = ({ orderId, amount, status, agentName, agentId, agentNo, onPress, time }: any) => {
+const SingleShopOrder = (props: { orderListItem: IOrderListItem; handlePress: (orderCollectionId: string) => void }) => {
+  const { orderListItem, handlePress } = props;
+  const [showOrderCollections, setshowOrderCollections] = useState(false);
+  const [orderId, setOrderId] = useState<string>();
+
+  const handleShowOrderCollections = () => {
+    if (!showOrderCollections) {
+      setOrderId(orderListItem.id);
+    }
+    setshowOrderCollections(!showOrderCollections);
+  };
+
+  const { data, error, isFetching } = useQuery(["orders", orderListItem.id], () => orderApi.getSingleOrder(orderListItem.id), {
+    enabled: !!orderId,
+  });
   return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={styles.orderSingleCardContainer}>
+    <View style={styles.orderSingleCardContainer}>
+      <TouchableOpacity onPress={() => handleShowOrderCollections()}>
         <View style={styles.orderSingleCardheaderContainer}>
-          <View style={statusStyle(status).statusContainer}>
-            <Text style={statusStyle(status).statusText}>{status}</Text>
+          <View style={statusStyle(orderListItem.status).statusContainer}>
+            <Text style={statusStyle(orderListItem.status).statusText}>{orderListItem.status}</Text>
           </View>
           <View style={styles.orderSingleCardTimeContainer}>
-            <Text style={styles.orderSingleCardTimeText}>{moment(time).format("hh:mmA")}</Text>
+            <Text style={styles.orderSingleCardTimeText}>{moment(orderListItem.deliveryPeriod).format("hh:mmA")}</Text>
           </View>
         </View>
         <View style={styles.orderSingleCardBodyContainer}>
           <View style={styles.orderSingleCardShopSectionContainer}>
             <View style={styles.orderSingleCardShopSectionAvatarContainer}>
               <Icon name="cart" size={40} />
-              <Text style={styles.orderSingleCardShopSectionAvatarText}>{`#${orderId}`}</Text>
+              <Text style={styles.orderSingleCardShopSectionAvatarText}>{`#${orderListItem.id}`}</Text>
             </View>
-            <Text style={styles.orderSingleCardShopSectionAmount}>{nairaCurrencyFormatter(amount)}</Text>
+            <Flex items="end">
+              <Text style={styles.orderSingleCardShopSectionAmount}>{nairaCurrencyFormatter(orderListItem.remainingAmount)}</Text>
+              <Text style={styles.orderSingleCardShopSectionRemainingAmount}>({nairaCurrencyFormatter(orderListItem.amount)})</Text>
+            </Flex>
           </View>
-          {agentId && (
-            <>
-              <Divider />
-              <View style={styles.orderSingleCardAgentSectionContainer}>
-                <View style={styles.orderSingleCardAgentSectionItemContainer}>
-                  <Text style={styles.orderSingleCardAgentSectionLabel}>Agent Name</Text>
-                  <Text style={styles.orderSingleCardAgentSectionText}>{agentName}</Text>
-                </View>
-                <View style={styles.orderSingleCardAgentSectionItemContainer}>
-                  <Text style={styles.orderSingleCardAgentSectionLabel}>Agent Number</Text>
-                  <Text style={styles.orderSingleCardAgentSectionText}>{agentNo}</Text>
-                </View>
-              </View>
-            </>
-          )}
         </View>
-      </View>
-      <View></View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+      {showOrderCollections &&
+        data?.data?.orderCollections.map((orderCollection) => (
+          <View style={styles.orderSingleCardBodyContainer}>
+            <Divider />
+            <TouchableOpacity onPress={() => handlePress(orderCollection.id)}>
+              <View style={styles.orderSingleCardShopSectionContainer}>
+                <View style={styles.orderSingleCardShopSectionAvatarContainer}>
+                  <Avatar size={40} image={{ uri: "https://mui.com/static/images/avatar/1.jpg" }} />
+                  <Flex w={150}>
+                    <Text style={styles.orderSingleCardAgentName}>Johnson Olaoluwa</Text>
+                    <Text style={styles.orderSingleCardAgentNumber}>{"07053332295"}</Text>
+                  </Flex>
+                </View>
+                <Flex items="end">
+                  <View style={progressStyle(orderCollection.collectionProgressStatus).statusContainer}>
+                    <Text style={progressStyle(orderCollection.collectionProgressStatus).statusText}>{orderCollection.collectionProgressStatus}</Text>
+                  </View>
+                  <Text style={styles.orderSingleCardShopAgentAmount}>{nairaCurrencyFormatter(orderCollection.amount)}</Text>
+                </Flex>
+              </View>
+            </TouchableOpacity>
+          </View>
+        ))}
+    </View>
   );
 };
 
@@ -55,6 +81,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
+    overflow: "hidden",
+    borderRadius: 12,
   },
   orderSingleCardheaderContainer: {
     flexDirection: "row",
@@ -76,8 +104,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   orderSingleCardBodyContainer: {
-    borderBottomRightRadius: 12,
-    borderBottomLeftRadius: 12,
+    // borderBottomRightRadius: 12,
+    // borderBottomLeftRadius: 12,
     backgroundColor: theme.colors.white,
   },
   orderSingleCardShopSectionContainer: {
@@ -101,6 +129,26 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "500",
     color: theme.colors["dark-400"],
+  },
+  orderSingleCardShopAgentAmount: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: theme.colors["dark-400"],
+  },
+  orderSingleCardAgentName: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: theme.colors["dark-400"],
+  },
+  orderSingleCardAgentNumber: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: theme.colors["dark-200"],
+  },
+  orderSingleCardShopSectionRemainingAmount: {
+    fontSize: 12,
+    fontWeight: "400",
+    color: theme.colors["dark-300"],
   },
   orderSingleCardAgentSectionContainer: {
     padding: 16,
@@ -134,4 +182,17 @@ const statusStyle = (status: string) =>
     },
   });
 
-export default SingleOrder;
+const progressStyle = (status: CollectionProgressStatusEnum) =>
+  StyleSheet.create({
+    statusContainer: {
+      backgroundColor: status === CollectionProgressStatusEnum.STARTED ? "blue" : "green",
+      padding: 4,
+      borderRadius: 4,
+    },
+    statusText: {
+      color: theme.colors.white,
+      fontSize: 8,
+      fontWeight: "600",
+    },
+  });
+export default SingleShopOrder;

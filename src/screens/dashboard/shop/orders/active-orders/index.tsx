@@ -3,16 +3,17 @@ import React from "react";
 import { FlatList, SafeAreaView, ScrollView, StatusBar, View } from "react-native";
 import { useSelector } from "react-redux";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import SingleOrder from "../components/single-order";
+import SingleOpenOrder from "../components/single-open-order";
 import { ActiveOrdersRootList } from "./root";
 import { RootState } from "../../../../../store/appSlice";
 import { IOrderListItem } from "../../../../../services/types";
 import { theme } from "../../../../../utils/theme";
+import SingleShopOrder from "../components/single-order";
 
 const AgentActiveOrders = ({ navigation }: NativeStackScreenProps<ActiveOrdersRootList>) => {
-  const orders = useSelector((state: RootState) => state.order.activeOrders);
-  const handlePress = (item: IOrderListItem) => {
-    navigation.navigate("shop-active-orders-single", { orderId: item.id });
+  const orders = useSelector((state: RootState) => state.order.shopOrders.activeOrders);
+  const handlePress = (orderCollectionId: string) => {
+    navigation.navigate("shop-active-orders-single", { orderCollectionId });
   };
   return (
     <View style={{ flex: 1 }}>
@@ -24,18 +25,7 @@ const AgentActiveOrders = ({ navigation }: NativeStackScreenProps<ActiveOrdersRo
           gap: 12,
         }}
         data={orders}
-        renderItem={({ item }) => (
-          <SingleOrder
-            time={item.deliveryPeriod}
-            orderId={item.id}
-            amount={item.amount}
-            status={item.status}
-            agentName={item.agentName}
-            agentId={item.agentId}
-            agentNo={item.agentNo}
-            onPress={() => handlePress(item)}
-          />
-        )}
+        renderItem={({ item }) => <SingleShopOrder orderListItem={item} handlePress={handlePress} />}
         keyExtractor={(item) => item.id.toString()}
       />
     </View>

@@ -65,9 +65,9 @@ const DashboardShopRoot = () => {
 
   useEffect(() => {
     const removeListener = firebaseService.listenForOrders(user!.id, user!.role);
-    return () => {
-      removeListener();
-    };
+    // return () => {
+    //   removeListener();
+    // };
   }, []);
   return (
     <DashboardNavigator.Navigator

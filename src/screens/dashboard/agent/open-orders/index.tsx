@@ -12,7 +12,7 @@ import DashboardAppBar from "../../components/DashboardAppBar";
 import { theme } from "../../../../utils/theme";
 
 const AgentOpenOrders = ({ navigation }: NativeStackScreenProps<OpenOrdersRootList>) => {
-  const orders = useSelector((state: RootState) => state.order.openOrders);
+  const orders = useSelector((state: RootState) => state.order.agentOrders.openOrders);
   const handlePress = (item: IOrderListItem) => {
     // Handle press event for a list item
     navigation.navigate("agent-open-orders-single", { orderId: item.id });
@@ -20,7 +20,7 @@ const AgentOpenOrders = ({ navigation }: NativeStackScreenProps<OpenOrdersRootLi
   return (
     <View style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
       <FlatList
-        style={{ backgroundColor: theme.colors["dark-100"], paddingHorizontal: 16, flex: 1 }}
+        style={{ backgroundColor: theme.colors["dark-100"], paddingVertical: 32, paddingHorizontal: 16, flex: 1 }}
         contentContainerStyle={{
           gap: 12,
           flex: 1,
@@ -31,11 +31,8 @@ const AgentOpenOrders = ({ navigation }: NativeStackScreenProps<OpenOrdersRootLi
           <SingleOrder
             time={item.deliveryPeriod}
             orderId={item.id}
-            amount={item.amount}
+            amount={item.remainingAmount}
             status={item.status}
-            agentName={item.agentName}
-            agentId={item.agentId}
-            agentNo={item.agentNo}
             onPress={() => handlePress(item)}
           />
         )}

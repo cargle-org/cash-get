@@ -1,20 +1,40 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { IOrderListItem, orderStatusEnum } from "../services/types";
+import { IOrderListItem } from "../services/types";
 
 export const orderSlice = createSlice({
   name: "orders",
   initialState: {
-    openOrders: [],
-    closedOrders: [],
-    activeOrders: [],
-  } as { openOrders: IOrderListItem[]; closedOrders: IOrderListItem[]; activeOrders: IOrderListItem[] },
+    shopOrders: {
+      openOrders: [],
+      closedOrders: [],
+      activeOrders: [],
+    },
+    agentOrders: {
+      openOrders: [],
+    },
+  } as {
+    shopOrders: { openOrders: IOrderListItem[]; closedOrders: IOrderListItem[]; activeOrders: IOrderListItem[] };
+    agentOrders: {
+      openOrders: IOrderListItem[];
+    };
+  },
   reducers: {
-    getOrders: (state, payload: PayloadAction<{ openOrders: IOrderListItem[]; closedOrders: IOrderListItem[]; activeOrders: IOrderListItem[] }>) => {
-      state.activeOrders = payload.payload.activeOrders;
-      state.closedOrders = payload.payload.closedOrders;
-      state.openOrders = payload.payload.openOrders;
+    getShopOrders: (
+      state,
+      payload: PayloadAction<{ openOrders: IOrderListItem[]; closedOrders: IOrderListItem[]; activeOrders: IOrderListItem[] }>
+    ) => {
+      state.shopOrders = {
+        activeOrders: payload.payload.activeOrders,
+        closedOrders: payload.payload.closedOrders,
+        openOrders: payload.payload.openOrders,
+      };
+    },
+    getAgentOrders: (state, payload: PayloadAction<{ openOrders: IOrderListItem[] }>) => {
+      state.agentOrders = {
+        openOrders: payload.payload.openOrders,
+      };
     },
   },
 });
 
-export const { getOrders } = orderSlice.actions;
+export const { getShopOrders, getAgentOrders } = orderSlice.actions;

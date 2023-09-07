@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { authSlice } from "./authSlice";
 import { orderSlice } from "./orderSlice";
+import { orderCollectionSlice } from "./orderCollectionSlice";
 
 const appSlice = createSlice({
   name: "app",
@@ -23,6 +24,7 @@ const reducers = combineReducers({
   app: appSlice.reducer,
   auth: authSlice.reducer,
   order: orderSlice.reducer,
+  orderCollection: orderCollectionSlice.reducer,
 });
 
 export const rootReducer: Reducer = (state: ReturnType<typeof reducers>, action: AnyAction) => {
