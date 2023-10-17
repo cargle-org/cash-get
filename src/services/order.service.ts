@@ -32,13 +32,13 @@ const acceptOrder = async (payload: {
     body: JSON.stringify({ ...payload, agentId: `${payload.agentId}` }),
   });
 
-const confirmAgentKey = async (payload: { orderCollectionId: string; agentKey: string }): Promise<IResponse<IOrder>> =>
+const confirmAgentKey = async (payload: { orderCollectionId: string; agentKey: string }): Promise<IResponse<IOrderCollection>> =>
   https.post({
     url: `${ORDER_BASE_URL}/${payload.orderCollectionId}/confirmAgent`,
     body: JSON.stringify({ key: payload.agentKey }),
   });
 
-const confirmShopKey = async (payload: { orderCollectionId: string; shopKey: string }): Promise<IResponse<IOrder>> =>
+const confirmShopKey = async (payload: { orderCollectionId: string; shopKey: string }): Promise<IResponse<IOrderCollection>> =>
   https.post({
     url: `${ORDER_BASE_URL}/${payload.orderCollectionId}/confirmShop`,
     body: JSON.stringify({ key: payload.shopKey }),

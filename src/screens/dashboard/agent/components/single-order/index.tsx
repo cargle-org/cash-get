@@ -14,7 +14,7 @@ const SingleOrder = ({ orderId, amount, status, onPress, time }: any) => {
             <Text style={statusStyle(status).statusText}>{status}</Text>
           </View>
           <View style={styles.orderSingleCardTimeContainer}>
-            <Text style={styles.orderSingleCardTimeText}>{moment(time).toNow(true)}</Text>
+            <Text style={styles.orderSingleCardTimeText}>{moment(time).format("hh:mmA")}</Text>
           </View>
         </View>
         <View style={styles.orderSingleCardBodyContainer}>
