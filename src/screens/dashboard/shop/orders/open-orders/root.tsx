@@ -4,8 +4,8 @@ import ShopOpenOrders from ".";
 import ViewOpenOrdersSingleOrder from "./view-order";
 
 export type OpenOrdersRootList = {
-  "agent-open-orders-all": undefined;
-  "agent-open-orders-single": { orderId: string };
+  "shop-open-orders-all": undefined;
+  "shop-open-orders-single": { orderId: string };
 };
 
 const ShopOpenOrdersRoot = () => {
@@ -16,7 +16,7 @@ const ShopOpenOrdersRoot = () => {
         options={{
           headerShown: false,
         }}
-        name="agent-open-orders-all"
+        name="shop-open-orders-all"
         component={ShopOpenOrders}
       />
       <ActiveOrdersStack.Screen
@@ -24,7 +24,7 @@ const ShopOpenOrdersRoot = () => {
           headerShown: false,
           presentation: "modal",
         }}
-        name="agent-open-orders-single"
+        name="shop-open-orders-single"
         component={ViewOpenOrdersSingleOrder}
       />
     </ActiveOrdersStack.Navigator>

@@ -12,21 +12,20 @@ import { orderApi } from "../../../../../../services/order.service";
 import { theme } from "../../../../../../utils/theme";
 import OrderAppBar from "../../../../components/OrderAppBar";
 import { nairaCurrencyFormatter } from "../../../../../../utils/misc";
-import { IUser } from "../../../../../../services/types";
+import { CollectionProgressStatusEnum, IUser } from "../../../../../../services/types";
 // import Clipboard from "@react-native-clipboard/clipboard";
 
 const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRootList>) => {
   const { route, navigation } = props;
-  const [agentKey, setAgentKey] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
   const queryClient = useQueryClient();
-  const orderCollectionId = (route.params as any)?.orderCollectionId;
+  const orderId = (route.params as any)?.orderId;
   const mutation = useMutation({
     mutationFn: orderApi.confirmAgentKey,
     onSuccess: ({ message, status, data }) => {
-      queryClient.invalidateQueries(orderCollectionId);
+      queryClient.invalidateQueries(orderId);
       setSuccessMsg(message);
       setTimeout(() => {
         setSuccessMsg("");
@@ -41,46 +40,19 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: orderApi.deleteOrder,
-    onSuccess: ({ message, status, data }) => {
-      queryClient.invalidateQueries(orderCollectionId);
-      setSuccessMsg(message);
-      queryClient.invalidateQueries(["orders", orderCollectionId]);
-      setTimeout(() => {
-        setSuccessMsg("");
-        navigation.goBack();
-      }, 3000);
-    },
-    onError: (error: AxiosError) => {
-      console.log(error.response?.data);
-      setErrorMsg((error.response?.data as any).message || "Error Encountered");
-      setTimeout(() => {
-        setErrorMsg("");
-      }, 3000);
-    },
-  });
-
-  const confirmOrder = (key: string) => {
-    mutation.mutate({
-      orderCollectionId: orderCollectionId,
-      agentKey: key,
-    });
-  };
-
-  const deleteOrder = () => {
-    deleteMutation.mutate({ orderId: orderCollectionId });
-  };
-
-  const { data, error, isFetching } = useQuery(["orderCollections", orderCollectionId], () => orderApi.getSingleOrderCollection(orderCollectionId));
+  const { data, error, isFetching } = useQuery(["orders", orderId], () => orderApi.getSingleOrder(orderId));
   // console.log(data);
   // useEffect(() => {
   //   queryClient.invalidateQueries([orderId]);
   //   console.log(data);
   // }, [data]);
+
+  const handlePressOrderCollection = (orderCollectionId: string, orderId: string) => {
+    navigation.navigate("shop-active-orders-single-collection", { orderCollectionId, orderId });
+  };
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors["dark-100"] }}>
-      <OrderAppBar navigate={navigation} orderId={orderCollectionId} />
+      <OrderAppBar navigate={navigation} orderId={orderId} />
       {isFetching ? (
         <Text>Loading ...</Text>
       ) : (
@@ -91,16 +63,16 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
             </View>
             <View style={styles.orderPrimaryDetailsContainer}>
               <Text style={styles.orderCardAmount}>{nairaCurrencyFormatter(data?.data?.amount || 0)}</Text>
-              <Text style={styles.orderCardAddress}>{data?.data?.order.address}</Text>
+              <Text style={styles.orderCardAddress}>{data?.data?.address}</Text>
             </View>
-            {data?.data?.agent && (
+            {data?.data?.shop && (
               <>
                 <Divider />
                 <View style={styles.orderCardAgentSectionContainer}>
-                  <Avatar image={{ uri: "https://mui.com/static/images/avatar/1.jpg" }} />
+                  <Avatar />
                   <View style={styles.orderCardAgentSectionContainer2}>
-                    <Text style={styles.orderCardAgentName}>{(data.data.agent as IUser).name}</Text>
-                    <Text style={styles.orderCardAgentPhoneNo}>{(data.data.agent as IUser).phoneNo}</Text>
+                    <Text style={styles.orderCardAgentName}>{(data.data.shop as IUser).name}</Text>
+                    <Text style={styles.orderCardAgentPhoneNo}>{(data.data.shop as IUser).phoneNo}</Text>
                   </View>
                 </View>
               </>
@@ -114,50 +86,48 @@ const ViewOpenOrdersSingleOrder = (props: NativeStackScreenProps<ActiveOrdersRoo
             <View style={styles.orderCardItemsContainer}>
               <View style={styles.orderCardItemsItem}>
                 <Text style={styles.orderCardItemsText1}>Contact Name :</Text>
-                <Text style={styles.orderCardItemsText2}>{data?.data?.order.contactName}</Text>
+                <Text style={styles.orderCardItemsText2}>{data?.data?.contactName}</Text>
               </View>
               <View style={styles.orderCardItemsItem}>
                 <Text style={styles.orderCardItemsText1}>Contact No:</Text>
-                <Text style={styles.orderCardItemsText2}>{data?.data?.order.contactNumber}</Text>
+                <Text style={styles.orderCardItemsText2}>{data?.data?.contactNumber}</Text>
               </View>
               <View style={{ ...styles.orderCardItemsItem, flexDirection: "column" }}>
                 <Text style={styles.orderCardItemsText1}>Extra Info:</Text>
-                {data?.data?.order.extraInfo && <Text style={styles.orderCardItemsText2}>{data?.data?.order.extraInfo}</Text>}
+                {data?.data?.extraInfo && <Text style={styles.orderCardItemsText2}>{data?.data?.extraInfo}</Text>}
               </View>
             </View>
           </View>
           <Divider />
-          <View style={styles.orderCardCopyApiKeyContainer}>
-            <Text style={styles.orderCardCopyApiKeyTitle}>Shop Key</Text>
-            <View style={styles.orderCardCopyApiKeyPressable}>
-              <Text variant="overline" style={styles.orderCardCopyApiKeyText}>
-                {data?.data?.shopKey}
-              </Text>
-              <TouchableOpacity onPress={() => Clipboard.setString(data?.data?.shopKey || "")}>
-                <Icon name="content-copy" color={theme.colors.white} size={26} />
+          {(data?.data?.orderCollections?.length || data!.data!.orderCollections.length > 0) && (
+            <Text style={styles.orderCardCopyApiKeyTitle}>Order Collections</Text>
+          )}
+
+          {data?.data?.orderCollections?.map((orderCollection) => (
+            <View style={styles.orderSingleCardBodyContainer}>
+              <TouchableOpacity onPress={() => handlePressOrderCollection(orderCollection.id, data.data!.id)}>
+                <View style={styles.orderSingleCardShopSectionContainer}>
+                  <View style={styles.orderSingleCardShopSectionAvatarContainer}>
+                    <Flex w={150}>
+                      <Text style={styles.orderSingleCardAgentName}>{orderCollection.agent.name}</Text>
+                      <Text style={styles.orderSingleCardAgentNumber}>{orderCollection.agent.phoneNo}</Text>
+                    </Flex>
+                  </View>
+                  <Flex items="end">
+                    <Flex direction="row" items="center" mb={4}>
+                      <Text style={styles.orderSingleCardShopAgentAmount}>{nairaCurrencyFormatter(orderCollection.amount)}</Text>
+                      <Text style={styles.orderSingleCardAgentNumber}>({orderCollection.collectionStatus})</Text>
+                    </Flex>
+                    <View style={progressStyle(orderCollection.collectionProgressStatus).statusContainer}>
+                      <Text style={progressStyle(orderCollection.collectionProgressStatus).statusText}>
+                        {orderCollection.collectionProgressStatus}
+                      </Text>
+                    </View>
+                  </Flex>
+                </View>
               </TouchableOpacity>
             </View>
-          </View>
-          <Divider />
-          <View style={styles.orderCardSubmitAgentKeyContainer}>
-            <TextInput
-              variant="outlined"
-              label="Enter Agent Key"
-              onChangeText={setAgentKey}
-              value={data?.data?.agentConfirmed ? data.data.agentKey : agentKey}
-              color={theme.colors["dark-500"]}
-              inputStyle={{ backgroundColor: theme.colors["dark-100"] }}
-              style={{ marginBottom: 16 }}
-              editable={!data?.data?.agentConfirmed}
-            />
-            <Button
-              disabled={data?.data?.agentConfirmed || agentKey.length < 7}
-              onPress={() => confirmOrder(agentKey)}
-              color={theme.colors["dark-500"]}
-              style={{ paddingVertical: 10 }}
-              title="Submit Key"
-            />
-          </View>
+          ))}
         </ScrollView>
       )}
       {errorMsg !== "" && (
@@ -283,7 +253,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   orderCardCopyApiKeyTitle: {
-    marginBottom: 12,
+    marginVertical: 12,
     fontWeight: "600",
     fontSize: 16,
     color: theme.colors["dark-200"],
@@ -306,6 +276,52 @@ const styles = StyleSheet.create({
   orderCardSubmitAgentKeyContainer: {
     paddingVertical: 16,
   },
+  //copied
+  orderSingleCardBodyContainer: {
+    backgroundColor: theme.colors.white,
+    marginBottom: 8,
+  },
+  orderSingleCardShopSectionContainer: {
+    padding: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  orderSingleCardShopSectionAvatarContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  orderSingleCardAgentName: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: theme.colors["dark-400"],
+    marginBottom: 4,
+  },
+  orderSingleCardAgentNumber: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: theme.colors["dark-200"],
+  },
+  orderSingleCardShopAgentAmount: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: theme.colors["dark-400"],
+  },
 });
+
+const progressStyle = (status: CollectionProgressStatusEnum) =>
+  StyleSheet.create({
+    statusContainer: {
+      backgroundColor: status === CollectionProgressStatusEnum.STARTED ? "blue" : "green",
+      padding: 4,
+      borderRadius: 4,
+    },
+    statusText: {
+      color: theme.colors.white,
+      fontSize: 8,
+      fontWeight: "600",
+    },
+  });
 
 export default ViewOpenOrdersSingleOrder;

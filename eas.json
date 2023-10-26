@@ -9,7 +9,7 @@
       "distribution": "internal",
       "env": {
         "NODE_ENV": "development",
-        "BASE_URL": "http://143.110.150.230:5000/api/v1",
+        "BASE_URL": "http://137.184.208.185:5000/api/v1",
         "FIREBASE_API_KEY": "AIzaSyCPNK9T6fvF49M0vQQXkMy67-xyY1CdsTU",
         "FIREBASE_AUTH_DOMAIN": "feedvote-9736e.firebaseapp.com",
         "FIREBASE_DATABASE_URL": "https://feedvote-9736e-default-rtdb.firebaseio.com",
@@ -29,7 +29,7 @@
       "autoIncrement": true,
       "env": {
         "NODE_ENV": "development",
-        "BASE_URL": "http://143.110.150.230:5000/api/v1",
+        "BASE_URL": "http://137.184.208.185:5000/api/v1",
         "FIREBASE_API_KEY": "AIzaSyCPNK9T6fvF49M0vQQXkMy67-xyY1CdsTU",
         "FIREBASE_AUTH_DOMAIN": "feedvote-9736e.firebaseapp.com",
         "FIREBASE_DATABASE_URL": "https://feedvote-9736e-default-rtdb.firebaseio.com",

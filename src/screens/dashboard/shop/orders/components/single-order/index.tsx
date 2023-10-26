@@ -8,68 +8,64 @@ import { useQuery } from "react-query";
 import { orderApi } from "../../../../../../services/order.service";
 import { CollectionProgressStatusEnum, IOrderCollection, IOrderListItem } from "../../../../../../services/types";
 
-const SingleShopOrder = (props: { orderListItem: IOrderListItem; handlePress: (orderCollectionId: string) => void }) => {
-  const { orderListItem, handlePress } = props;
-  const [showOrderCollections, setshowOrderCollections] = useState(false);
-  const [orderId, setOrderId] = useState<string>();
+const SingleShopOrder = (props: {
+  orderListItem: IOrderListItem;
+  handlePress: (orderId: string) => void;
+  handlePressOrderCollection: (orderCollectionId: string, orderId: string) => void;
+}) => {
+  const { orderListItem, handlePress, handlePressOrderCollection } = props;
 
-  const handleShowOrderCollections = () => {
-    if (!showOrderCollections) {
-      setOrderId(orderListItem.id);
-    }
-    setshowOrderCollections(!showOrderCollections);
-  };
-
-  const { data, error, isFetching } = useQuery(["orders", orderListItem.id], () => orderApi.getSingleOrder(orderListItem.id), {
-    enabled: !!orderId,
-  });
   return (
     <View style={styles.orderSingleCardContainer}>
-      <TouchableOpacity onPress={() => handleShowOrderCollections()}>
-        <View style={styles.orderSingleCardheaderContainer}>
-          <View style={statusStyle(orderListItem.status).statusContainer}>
-            <Text style={statusStyle(orderListItem.status).statusText}>{orderListItem.status}</Text>
-          </View>
-          <View style={styles.orderSingleCardTimeContainer}>
-            <Text style={styles.orderSingleCardTimeText}>{moment(orderListItem.deliveryPeriod).format("hh:mmA")}</Text>
-          </View>
+      <View style={styles.orderSingleCardheaderContainer}>
+        <View style={statusStyle(orderListItem.status).statusContainer}>
+          <Text style={statusStyle(orderListItem.status).statusText}>{orderListItem.status}</Text>
         </View>
+        <View style={styles.orderSingleCardTimeContainer}>
+          <Text style={styles.orderSingleCardTimeText}>{moment(orderListItem.deliveryPeriod).format("hh:mmA")}</Text>
+        </View>
+      </View>
+      <View style={styles.orderSingleCardBodyContainer}>
+        <View style={styles.orderSingleCardShopSectionContainer}>
+          <View style={styles.orderSingleCardShopSectionAvatarContainer}>
+            <Icon name="cart" size={40} />
+            <Text style={styles.orderSingleCardShopSectionAvatarText}>{`#${orderListItem.id}`}</Text>
+          </View>
+          <Flex items="end">
+            <Text style={styles.orderSingleCardShopSectionAmount}>{nairaCurrencyFormatter(orderListItem.amount)}</Text>
+          </Flex>
+        </View>
+      </View>
+      {orderListItem?.orderCollections?.map((orderCollection) => (
         <View style={styles.orderSingleCardBodyContainer}>
-          <View style={styles.orderSingleCardShopSectionContainer}>
-            <View style={styles.orderSingleCardShopSectionAvatarContainer}>
-              <Icon name="cart" size={40} />
-              <Text style={styles.orderSingleCardShopSectionAvatarText}>{`#${orderListItem.id}`}</Text>
-            </View>
-            <Flex items="end">
-              <Text style={styles.orderSingleCardShopSectionAmount}>{nairaCurrencyFormatter(orderListItem.remainingAmount)}</Text>
-              <Text style={styles.orderSingleCardShopSectionRemainingAmount}>({nairaCurrencyFormatter(orderListItem.amount)})</Text>
-            </Flex>
-          </View>
-        </View>
-      </TouchableOpacity>
-      {showOrderCollections &&
-        data?.data?.orderCollections.map((orderCollection) => (
-          <View style={styles.orderSingleCardBodyContainer}>
-            <Divider />
-            <TouchableOpacity onPress={() => handlePress(orderCollection.id)}>
-              <View style={styles.orderSingleCardShopSectionContainer}>
-                <View style={styles.orderSingleCardShopSectionAvatarContainer}>
-                  <Avatar size={40} image={{ uri: "https://mui.com/static/images/avatar/1.jpg" }} />
-                  <Flex w={150}>
-                    <Text style={styles.orderSingleCardAgentName}>Johnson Olaoluwa</Text>
-                    <Text style={styles.orderSingleCardAgentNumber}>{"07053332295"}</Text>
-                  </Flex>
-                </View>
-                <Flex items="end">
-                  <View style={progressStyle(orderCollection.collectionProgressStatus).statusContainer}>
-                    <Text style={progressStyle(orderCollection.collectionProgressStatus).statusText}>{orderCollection.collectionProgressStatus}</Text>
-                  </View>
-                  <Text style={styles.orderSingleCardShopAgentAmount}>{nairaCurrencyFormatter(orderCollection.amount)}</Text>
+          <Divider />
+          <TouchableOpacity onPress={() => handlePressOrderCollection(orderCollection.id, orderListItem.id)}>
+            <View style={styles.orderSingleCardShopSectionContainer}>
+              <View style={styles.orderSingleCardShopSectionAvatarContainer}>
+                <Flex w={150}>
+                  <Text style={styles.orderSingleCardAgentName}>{orderCollection.agentName}</Text>
+                  <Text style={styles.orderSingleCardAgentNumber}>{orderCollection.agentNo}</Text>
                 </Flex>
               </View>
-            </TouchableOpacity>
-          </View>
-        ))}
+              <Flex items="end">
+                <Flex direction="row" items="center" mb={4}>
+                  <Text style={styles.orderSingleCardShopAgentAmount}>{nairaCurrencyFormatter(orderCollection.amount)}</Text>
+                  <Text style={styles.orderSingleCardAgentNumber}>({orderCollection.collectionStatus})</Text>
+                </Flex>
+                <View style={progressStyle(orderCollection.collectionProgressStatus).statusContainer}>
+                  <Text style={progressStyle(orderCollection.collectionProgressStatus).statusText}>{orderCollection.collectionProgressStatus}</Text>
+                </View>
+              </Flex>
+            </View>
+          </TouchableOpacity>
+        </View>
+      ))}
+      <Divider />
+      <TouchableOpacity onPress={() => handlePress(orderListItem.id)}>
+        <View style={styles.orderSingleCardButtonView}>
+          <Text style={styles.orderSingleCardButtonText}>View Order</Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -139,6 +135,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     color: theme.colors["dark-400"],
+    marginBottom: 4,
   },
   orderSingleCardAgentNumber: {
     fontSize: 12,
@@ -165,6 +162,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: theme.colors["dark-400"],
     fontWeight: "600",
+  },
+  orderSingleCardButtonView: {
+    height: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottomEndRadius: 12,
+    backgroundColor: theme.colors.white,
+    // borderTopWidth: 2,
+    // borderTopColor: theme.colors["dark-100"],
+  },
+  orderSingleCardButtonText: {
+    color: theme.colors["dark-500"],
+    fontSize: 16,
+    fontWeight: "700",
   },
 });
 

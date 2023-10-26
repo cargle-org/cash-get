@@ -16,6 +16,7 @@ class HttpFacade {
       headers: { "content-type": "application/json" },
     });
 
+    console.log(BASE_URL);
     this.http.interceptors.request.use(
       (config) => {
         //update store to use auth storage

@@ -53,6 +53,7 @@ const Login = (props: LoginProps) => {
     },
     onError: (error: AxiosError) => {
       setErrorMsg((error.response?.data as any)?.message || "Error encountered");
+      console.log(error);
       loginFormik.setSubmitting(false);
       setTimeout(() => {
         setErrorMsg("");

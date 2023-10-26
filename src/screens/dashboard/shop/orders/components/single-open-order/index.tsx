@@ -2,7 +2,6 @@ import { Avatar, Flex, Icon, Pressable, Text } from "@react-native-material/core
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { nairaCurrencyFormatter } from "../../../../../../utils/misc";
-import { Divider } from "react-native-paper";
 import { theme } from "../../../../../../utils/theme";
 import moment from "moment";
 
@@ -25,8 +24,7 @@ const SingleOpenOrder = ({ orderId, amount, remainingAmount, status, onPress, ti
               <Text style={styles.orderSingleCardShopSectionAvatarText}>{`#${orderId}`}</Text>
             </View>
             <Flex items="end">
-              <Text style={styles.orderSingleCardShopSectionAmount}>{nairaCurrencyFormatter(remainingAmount)}</Text>
-              <Text style={styles.orderSingleCardShopSectionRemainingAmount}>({nairaCurrencyFormatter(amount)})</Text>
+              <Text style={styles.orderSingleCardShopSectionAmount}>({nairaCurrencyFormatter(amount)})</Text>
             </Flex>
           </View>
         </View>

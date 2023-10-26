@@ -70,6 +70,7 @@ export interface IOrderCollection {
   amount: number;
   agent: IUser;
   order: IOrder;
+  orderId: string;
   deliveryPeriod: Date;
   collectionStatus: CollectionStatusEnum;
   collectionProgressStatus: CollectionProgressStatusEnum;
@@ -96,7 +97,9 @@ export interface IOrderListItem {
   remainingAmount: number;
   shopId: string;
   deliveryPeriod: string;
+  orderCollections?: IOrderCollectionListItem[];
 }
+
 export interface IOrderCollectionListItem {
   agentId: string;
   agentName: string;

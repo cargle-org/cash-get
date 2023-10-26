@@ -13,7 +13,7 @@ const ShopOpenOrders = ({ navigation }: NativeStackScreenProps<OpenOrdersRootLis
   const orders = useSelector((state: RootState) => state.order.shopOrders.openOrders);
   const handlePress = (item: IOrderListItem) => {
     // Handle press event for a list item
-    navigation.navigate("agent-open-orders-single", { orderId: item.id });
+    navigation.navigate("shop-open-orders-single", { orderId: item.id });
   };
   return (
     <View style={{ flex: 1, paddingTop: StatusBar.currentHeight }}>
